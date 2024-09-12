@@ -4,6 +4,7 @@ namespace LigaIsadoraSilva.Data.Entities
 {
     public class Player
     {
+        [Key]
         public int Id { get; set; }
 
         [StringLength(50, ErrorMessage = "The field {0} can contain {1} characters length.")]

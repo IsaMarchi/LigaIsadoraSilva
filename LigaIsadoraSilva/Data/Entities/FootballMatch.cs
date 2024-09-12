@@ -4,6 +4,7 @@ namespace LigaIsadoraSilva.Data.Entities
 {
     public class FootballMatch
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]
@@ -18,15 +19,14 @@ namespace LigaIsadoraSilva.Data.Entities
         public FootballTeam HomeTeam { get; set; } // Clube que joga em casa
 
         [Required]
-        public int HostTeamId { get; set; }
-        public FootballTeam HostTeam { get; set; } // Clube visitante
+        public int VisitTeamId { get; set; }
+        public FootballTeam VisitTeam { get; set; } // Clube visitante
 
         [Display(Name = "Home Goals")]
         public int HomeGoals { get; set; } // Gols marcados pelo clube da casa
 
-        [Display(Name = "Away Goals")]
-        public int AwayGoals { get; set; } // Gols marcados pelo clube visitante
-
+        [Display(Name = "Visit Goals")]
+        public int VisitGoals { get; set; } // Gols marcados pelo clube visitante
 
     }
 }

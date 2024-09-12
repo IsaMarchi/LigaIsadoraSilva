@@ -4,7 +4,9 @@ namespace LigaIsadoraSilva.Data.Entities
 {
     public class FootballTeam
     {
+        [Key]
         public int ID { get; set; }
+
 
         [Required]
         [StringLength(50, ErrorMessage = "The field {0} can contain {1} characters length.")]
@@ -32,7 +34,7 @@ namespace LigaIsadoraSilva.Data.Entities
 
         public ICollection<Player> Players { get; set; }
         public ICollection<FootballMatch> HomeGames { get; set; }
-        public ICollection<FootballMatch> AwayGames { get; set; }      
+        public ICollection<FootballMatch> VisitGames { get; set; }      
 
     }
 }
