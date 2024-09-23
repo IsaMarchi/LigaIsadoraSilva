@@ -17,6 +17,8 @@ namespace LigaIsadoraSilva.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
+
             //Se eu apagar o jogo, não vai apagar o time. Desligando a exclusão em cascata. 
             builder.Entity<FootballMatch>()
                 .HasOne(g => g.HomeTeam)
@@ -30,7 +32,6 @@ namespace LigaIsadoraSilva.Data
                .HasForeignKey(g => g.VisitTeamId)
                .OnDelete(DeleteBehavior.Restrict);
 
-            base.OnModelCreating(builder);
         }
     }
 }
