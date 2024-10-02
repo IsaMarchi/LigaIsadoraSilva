@@ -1,0 +1,111 @@
+﻿@model LigaIsadoraSilva.Data.Entities.Player
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<style>
+    body {
+        background-color: black;
+        color: white;
+    }
+
+    h1, h4 {
+        color: white;
+    }
+
+    .form-control {
+        background-color: white;
+        color: black;
+    }
+
+    .btn-primary {
+        background-color: #66ff66;
+        border-color: #66ff66;
+        color: white;
+        font-weight: bold;
+    }
+
+    .text-danger {
+        color: #ff6666;
+    }
+
+    a.btn-back {
+        background-color: #00cccc;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        margin-left: 10px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        a.btn-back:hover {
+            background-color: #00b3b3;
+            color: white;
+        }
+
+    .form-group-inline {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+        .form-group-inline input[type="submit"],
+        .form-group-inline a.btn-back {
+            margin-right: 10px;
+        }
+</style>
+
+<h1>Create Player</h1>
+
+<h4>Player</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Surname" class="control-label"></label>
+                <input asp-for="Surname" class="form-control" />
+                <span asp-validation-for="Surname" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Birth" class="control-label"></label>
+                <input asp-for="Birth" class="form-control" />
+                <span asp-validation-for="Birth" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Nationality" class="control-label"></label>
+                <input asp-for="Nationality" class="form-control" />
+                <span asp-validation-for="Nationality" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Photo" class="control-label"></label>
+                <input asp-for="Photo" class="form-control" />
+                <span asp-validation-for="Photo" class="text-danger"></span>
+            </div>
+
+            <div class="form-group-inline">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a class="btn-back" asp-action="Index">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

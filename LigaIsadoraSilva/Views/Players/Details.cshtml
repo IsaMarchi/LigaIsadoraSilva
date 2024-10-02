@@ -1,0 +1,87 @@
+﻿@model LigaIsadoraSilva.Data.Entities.Player
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<style>
+    body {
+        background-color: black;
+        color: white;
+    }
+
+    h1, h3, h4 {
+        color: white;
+    }
+
+    .btn-edit {
+        background-color: #00cc66;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-back {
+        background-color: #00cccc;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        margin-left: 10px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-back:hover, .btn-edit:hover {
+            background-color: #00b3b3;
+            color: white;
+        }
+
+    dl {
+        margin: 0;
+    }
+</style>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Player</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Surname)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Surname)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Birth)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Birth)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Nationality)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Nationality)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Photo)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Photo)
+        </dd>
+    </dl>
+</div>
+<div class="form-group-inline">
+    <a class="btn-edit" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+    <a class="btn-back" asp-action="Index">Back to List</a>
+</div>

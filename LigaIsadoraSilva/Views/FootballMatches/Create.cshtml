@@ -1,0 +1,117 @@
+﻿@model LigaIsadoraSilva.Data.Entities.FootballMatch
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<style>
+    body {
+        background-color: black;
+        color: white;
+    }
+
+    h1, h4 {
+        color: white;
+    }
+
+    .form-control {
+        background-color: white;
+        color: black;
+    }
+
+    .btn-primary {
+        background-color: #66ff66;
+        border-color: #66ff66;
+        color: white;
+        font-weight: bold;
+    }
+
+    .text-danger {
+        color: #ff6666;
+    }
+
+    a.btn-back {
+        background-color: #00cccc;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        margin-left: 10px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        a.btn-back:hover {
+            background-color: #00b3b3;
+            color: white;
+        }
+
+    .form-group-inline {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+        .form-group-inline input[type="submit"],
+        .form-group-inline a.btn-back {
+            margin-right: 10px;
+        }
+</style>
+
+<h1>Create Football Match</h1>
+
+<h4>Match information</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StartDate" class="control-label"></label>
+                <input asp-for="StartDate" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="HomeTeamId" class="control-label"></label>
+                <select asp-for="HomeTeamId" class="form-control" asp-items="ViewBag.HomeTeamId"></select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="VisitTeamId" class="control-label"></label>
+                <select asp-for="VisitTeamId" class="form-control" asp-items="ViewBag.VisitTeamId"></select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="HomeGoals" class="control-label"></label>
+                <input asp-for="HomeGoals" class="form-control" />
+                <span asp-validation-for="HomeGoals" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="VisitGoals" class="control-label"></label>
+                <input asp-for="VisitGoals" class="form-control" />
+                <span asp-validation-for="VisitGoals" class="text-danger"></span>
+            </div>
+
+            <div class="form-group-inline">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a class="btn-back" asp-action="Index">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
