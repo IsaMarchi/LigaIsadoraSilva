@@ -2,6 +2,8 @@ using LigaIsadoraSilva.Data;
 using LigaIsadoraSilva.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using LigaIsadoraSilva.Helpers;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,9 @@ builder.Services.AddIdentity<User, IdentityRole>(cfg =>
     cfg.Password.RequireNonAlphanumeric = false;
     cfg.Password.RequiredLength = 6;
 }).AddEntityFrameworkStores<DataContext>();
+
+// Registrar o IImageHelper no contêiner de serviços
+builder.Services.AddScoped<IImageHelper, ImageHelper>();
 
 var app = builder.Build();
 
@@ -45,7 +50,7 @@ using (var scope = app.Services.CreateScope())
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    
     app.UseHsts();
 }
 

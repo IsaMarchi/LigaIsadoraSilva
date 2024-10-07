@@ -1,28 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LigaIsadoraSilva.Data;
 using LigaIsadoraSilva.Data.Entities;
+using LigaIsadoraSilva.Helpers;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace LigaIsadoraSilva.Controllers
 {
     public class PlayersController : Controller
     {
         private readonly DataContext _context;
+        private readonly IImageHelper _imageHelper;
 
-        public PlayersController(DataContext context)
+        public PlayersController(DataContext context, IImageHelper imageHelper)
         {
             _context = context;
+            _imageHelper = imageHelper;
         }
 
         // GET: Players
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Players.ToListAsync());
+            // Incluindo a propriedade Club para carregar o clube associado ao jogador
+            // Ordenando jogadores em ordem alfabética pelo nome
+            var players = await _context.Players
+                .Include(p => p.Club) // Eager loading do clube
+                .OrderBy(p => p.Name) // Ordena por nome
+                .ToListAsync();
+
+            return View(players);
         }
 
         // GET: Players/Details/5
@@ -34,7 +40,9 @@ namespace LigaIsadoraSilva.Controllers
             }
 
             var player = await _context.Players
+                .Include(p => p.Club) // Incluindo o clube nos detalhes
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (player == null)
             {
                 return NotFound();
@@ -46,22 +54,30 @@ namespace LigaIsadoraSilva.Controllers
         // GET: Players/Create
         public IActionResult Create()
         {
+            var clubes = _context.Clubs;
+            ViewData["ClubId"] = new SelectList(clubes, "Id", "Name");
             return View();
         }
 
         // POST: Players/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Player player)
         {
             if (ModelState.IsValid)
             {
+                if (player.ImageFile != null)
+                {
+                    string imageUrl = await _imageHelper.UploadImageAsync(player.ImageFile, "Player");
+                    player.Photo = imageUrl;
+                }
                 _context.Add(player);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            var clubes = _context.Clubs;
+            ViewData["ClubId"] = new SelectList(clubes, "Id", "Name", player.ClubId);
             return View(player);
         }
 
@@ -78,12 +94,13 @@ namespace LigaIsadoraSilva.Controllers
             {
                 return NotFound();
             }
+
+            var clubes = _context.Clubs;
+            ViewData["ClubId"] = new SelectList(clubes, "Id", "Name", player.ClubId);
             return View(player);
         }
 
         // POST: Players/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Player player)
@@ -95,9 +112,27 @@ namespace LigaIsadoraSilva.Controllers
 
             if (ModelState.IsValid)
             {
+                var oldPlayer = _context.Players.FirstOrDefault(x => x.Id == player.Id);
+
                 try
                 {
-                    _context.Update(player);
+                    if (player.ImageFile != null)
+                    {
+                        string newImageUrl = await _imageHelper.UploadImageAsync(player.ImageFile, "Player");
+                        player.Photo = newImageUrl;
+                    }
+                    else
+                    {
+                        player.Photo = oldPlayer?.Photo;
+                    }
+
+                    oldPlayer.Birth = player.Birth;
+                    oldPlayer.Surname = player.Surname;
+                    oldPlayer.Name = player.Name;
+                    oldPlayer.Nationality = player.Nationality;
+                    oldPlayer.ClubId = player.ClubId;
+
+                    _context.Update(oldPlayer);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -111,8 +146,12 @@ namespace LigaIsadoraSilva.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
+            var clubes = _context.Clubs;
+            ViewData["ClubId"] = new SelectList(clubes, "Id", "Name", player.ClubId);
             return View(player);
         }
 
@@ -125,7 +164,9 @@ namespace LigaIsadoraSilva.Controllers
             }
 
             var player = await _context.Players
+                .Include(p => p.Club) // Incluindo o clube ao buscar para deletar
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (player == null)
             {
                 return NotFound();
@@ -155,3 +196,4 @@ namespace LigaIsadoraSilva.Controllers
         }
     }
 }
+

@@ -4,6 +4,8 @@ namespace LigaIsadoraSilva.Data.Entities
 {
     public class FootballTeam
     {
+        internal object Games;
+
         [Key]
         public int Id { get; set; }
 
@@ -32,9 +34,28 @@ namespace LigaIsadoraSilva.Data.Entities
         [Display(Name = "Matches Played")]
         public int MatchesPlayed { get; set; }
 
-        public ICollection<Player> Players { get; set; }
-        public ICollection<FootballMatch> HomeGames { get; set; }
-        public ICollection<FootballMatch> VisitGames { get; set; }      
+        [Display(Name = "Logo")]
+        public string? Photo { get; set; }
+
+        public string? ImageFullPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Photo))
+                {
+                    return "~/images/noImage.png";
+                }
+
+                return $"https://localhost:44301/{Photo.Substring(1)}";
+            }
+        }
+
+        // Coleção de jogadores que pertencem a este time
+        public ICollection<Player>? Players { get; set; } = new List<Player>(); // Inicialização para evitar NullReferenceException
+
+        // Coleções de partidas jogadas em casa e fora
+        public ICollection<FootballMatch>? HomeGames { get; set; } = new List<FootballMatch>();
+        public ICollection<FootballMatch>? VisitGames { get; set; } = new List<FootballMatch>();
 
     }
 }

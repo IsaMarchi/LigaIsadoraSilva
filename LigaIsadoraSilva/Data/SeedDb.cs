@@ -66,7 +66,7 @@ namespace LigaIsadoraSilva.Data
                 Birth = birth,
                 Nationality = nationality,
                 Photo = photo,
-                Team = team
+                Club = team
             });
         }
     }

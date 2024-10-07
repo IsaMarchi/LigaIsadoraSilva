@@ -28,5 +28,7 @@ namespace LigaIsadoraSilva.Data.Entities
         [Display(Name = "Visit Goals")]
         public int VisitGoals { get; set; } // Gols marcados pelo clube visitante
 
+        
+
     }
 }

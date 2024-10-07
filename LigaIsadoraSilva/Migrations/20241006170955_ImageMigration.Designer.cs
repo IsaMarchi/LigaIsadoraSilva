@@ -4,6 +4,7 @@ using LigaIsadoraSilva.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LigaIsadoraSilva.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241006170955_ImageMigration")]
+    partial class ImageMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -114,9 +117,6 @@ namespace LigaIsadoraSilva.Migrations
                     b.Property<DateTime>("Birth")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ClubId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -133,9 +133,12 @@ namespace LigaIsadoraSilva.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ClubId");
+                    b.HasIndex("TeamId");
 
                     b.ToTable("Players");
                 });
@@ -367,13 +370,13 @@ namespace LigaIsadoraSilva.Migrations
 
             modelBuilder.Entity("LigaIsadoraSilva.Data.Entities.Player", b =>
                 {
-                    b.HasOne("LigaIsadoraSilva.Data.Entities.FootballTeam", "Club")
+                    b.HasOne("LigaIsadoraSilva.Data.Entities.FootballTeam", "Team")
                         .WithMany("Players")
-                        .HasForeignKey("ClubId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Club");
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

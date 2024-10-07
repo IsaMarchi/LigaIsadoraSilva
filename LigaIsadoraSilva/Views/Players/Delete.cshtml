@@ -78,11 +78,12 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Nationality)
         </dd>
+        <!-- Image Field -->
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Photo)
+            Player Image
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Photo)
+            <img src="@Model.ImageFullPath" alt="Player Image" class="img-fluid" style="max-width: 200px;" />
         </dd>
     </dl>
 

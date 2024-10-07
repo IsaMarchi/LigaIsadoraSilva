@@ -1,7 +1,7 @@
 ﻿@model LigaIsadoraSilva.Data.Entities.Player
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Edit";
 }
 
 <style>
@@ -59,7 +59,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -72,20 +72,35 @@
                 <input asp-for="Surname" class="form-control" />
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Birth" class="control-label"></label>
-                <input asp-for="Birth" class="form-control" />
+                <input asp-for="Birth" type="date" class="form-control" />
                 <span asp-validation-for="Birth" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Nationality" class="control-label"></label>
                 <input asp-for="Nationality" class="form-control" />
                 <span asp-validation-for="Nationality" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Photo" class="control-label"></label>
-                <input asp-for="Photo" class="form-control" />
-                <span asp-validation-for="Photo" class="text-danger"></span>
+                <label asp-for="ClubId" class="control-label"></label>
+                <select asp-for="ClubId" class="form-control" asp-items="ViewBag.ClubId"></select>
+            </div>
+
+            <!-- Image Field -->
+            <div class="form-group">
+                <label asp-for="ImageFullPath" class="control-label">Player Photo</label>
+                <div>
+                    <img src="@Model.ImageFullPath" alt="Photo" class="img-thumbnail" style="max-width: 150px;" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" type="file" class="form-control" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
             <div class="button-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

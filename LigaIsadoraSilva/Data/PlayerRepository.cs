@@ -1,5 +1,6 @@
 ﻿using LigaIsadoraSilva.Data.Entities;
 using LigaIsadoraSilva.Data.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace LigaIsadoraSilva.Data
 {
@@ -9,6 +10,27 @@ namespace LigaIsadoraSilva.Data
         public PlayerRepository(DataContext context)
         {
             _context = context;
+        }
+
+        public async Task<Player> GetPlayerByIdWithClubs(int? id)
+        {
+            if (id == null)
+            {
+                //view not found
+                return null;
+            }
+
+            var player = await _context.Players
+                .Include(s => s.Club)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (player == null)
+            {
+                //view not found
+                return null;
+            }
+
+            return player;
         }
 
         public IEnumerable<Player> GetPlayers()

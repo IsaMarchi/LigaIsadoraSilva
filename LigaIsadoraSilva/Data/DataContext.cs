@@ -32,6 +32,12 @@ namespace LigaIsadoraSilva.Data
                .HasForeignKey(g => g.VisitTeamId)
                .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<Player>()
+                .HasOne(p => p.Club) // Associa o jogador a um clube
+                .WithMany(t => t.Players) // Um clube pode ter muitos jogadores
+                .HasForeignKey(p => p.ClubId) // Utiliza ClubId como chave estrangeira
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }
