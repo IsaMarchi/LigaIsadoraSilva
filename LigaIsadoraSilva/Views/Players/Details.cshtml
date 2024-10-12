@@ -38,67 +38,62 @@
             color: white;
         }
 
-    dl {
-        margin: 0;
+    .player-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 20px;
     }
+
+        .player-details dl {
+            margin: 0;
+            flex: 1;
+        }
+
+    .player-image {
+        margin-left: 20px;
+        text-align: center;
+    }
+
+        .player-image img {
+            max-width: 250px;
+            border: 2px solid white;
+        }
 </style>
 
 <h1>Details</h1>
 
-<div>
-    <h4>Player</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Surname)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Surname)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Birth)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Birth)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Nationality)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Nationality)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Photo)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Photo)
-        </dd>
-        <!-- Adicionando o nome do clube -->
-        <dt class="col-sm-2">
-            Club
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Club?.Name
-        </dd>
-    </dl>
-</div>
+<div class="player-details">
+    <!-- Coluna para os detalhes do jogador -->
+    <div class="player-info">
+        <h4>@Model.Name @Model.Surname</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Name)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Name)</dd>
 
-<!-- Campo de imagem -->
-<div class="form-group">
-    <label asp-for="ImageFullPath" class="control-label">Player Picture</label>
-    <div>
-        <img src="@Model.ImageFullPath" alt="Photo" class="img-thumbnail" style="max-width: 150px;" />
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Surname)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Surname)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Birth)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Birth)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Nationality)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Nationality)</dd>
+
+            <dt class="col-sm-4">Club</dt>
+            <dd class="col-sm-8">@Model.Club?.Name</dd>
+        </dl>
+    </div>
+
+    <!-- Coluna para a imagem do jogador -->
+    <div class="player-image">
+        <img src="@Model.ImageFullPath" alt="Foto do jogador" class="img-thumbnail" />
     </div>
 </div>
 
+<!-- Botões de ação -->
 <div class="form-group-inline">
     <a class="btn-edit" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
     <a class="btn-back" asp-action="Index">Back to List</a>
 </div>
-
