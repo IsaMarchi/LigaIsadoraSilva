@@ -2,16 +2,20 @@
 using Microsoft.EntityFrameworkCore;
 using LigaIsadoraSilva.Data;
 using LigaIsadoraSilva.Data.Entities;
+using LigaIsadoraSilva.Helpers;
+using System.Numerics;
 
 namespace LigaIsadoraSilva.Controllers
 {
     public class FootballTeamsController : Controller
     {
         private readonly DataContext _context;
+        private readonly IImageHelper _imageHelper;
 
-        public FootballTeamsController(DataContext context)
+        public FootballTeamsController(DataContext context, IImageHelper imageHelper)
         {
             _context = context;
+            _imageHelper = imageHelper;
         }
 
         // GET: FootballTeams
@@ -45,14 +49,17 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // POST: FootballTeams/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(FootballTeam footballTeam)
         {
             if (ModelState.IsValid)
             {
+                if (footballTeam.ImageFile != null)
+                {
+                    string imageUrl = await _imageHelper.UploadImageAsync(footballTeam.ImageFile, "Club");
+                    footballTeam.Photo = imageUrl;
+                }
                 _context.Add(footballTeam);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -77,8 +84,6 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // POST: FootballTeams/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, FootballTeam footballTeam)
@@ -90,9 +95,32 @@ namespace LigaIsadoraSilva.Controllers
 
             if (ModelState.IsValid)
             {
+                var oldTeam = await _context.Clubs.FindAsync(footballTeam.Id);
+
+                if (oldTeam == null)
+                {
+                    return NotFound();
+                }
+
                 try
                 {
-                    _context.Update(footballTeam);
+                    if (footballTeam.ImageFile != null)
+                    {
+                        // Upload da nova imagem
+                        string newImageUrl = await _imageHelper.UploadImageAsync(footballTeam.ImageFile, "Club");
+                        oldTeam.Photo = newImageUrl;  // Atualizando a imagem no objeto rastreado
+                    }
+
+                    // Atualizando os outros campos
+                    oldTeam.Name = footballTeam.Name;
+                    oldTeam.Coach = footballTeam.Coach;
+                    oldTeam.Stadium = footballTeam.Stadium;
+                    oldTeam.Foundation = footballTeam.Foundation;
+                    oldTeam.Points = footballTeam.Points;
+                    oldTeam.MatchesPlayed = footballTeam.MatchesPlayed;
+
+                    // Salvando as alterações no banco de dados
+                    _context.Update(oldTeam);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

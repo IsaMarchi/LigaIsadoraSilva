@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LigaIsadoraSilva.Data.Entities
 {
@@ -22,20 +23,19 @@ namespace LigaIsadoraSilva.Data.Entities
         [StringLength(50, ErrorMessage = "The field {0} can contain {1} characters length.")]
         public string Stadium { get; set; }
 
-        [Required]
-        [StringLength(500)]
-        [Display(Name = "Logo")]
-        public string LogoUrl { get; set; } 
-
         public DateTime Foundation { get; set; }
 
-        public int Points { get; set; }
+        public int Points { get; set; } = 0;
 
         [Display(Name = "Matches Played")]
-        public int MatchesPlayed { get; set; }
+        public int MatchesPlayed { get; set; } = 0;
 
         [Display(Name = "Logo")]
         public string? Photo { get; set; }
+
+        [NotMapped] // Esta propriedade não será mapeada no banco de dados
+        [Display(Name = "Upload Image")]
+        public IFormFile? ImageFile { get; set; } 
 
         public string? ImageFullPath
         {

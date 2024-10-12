@@ -68,10 +68,11 @@
             @Html.DisplayFor(model => model.Stadium)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.LogoUrl)
+            @Html.DisplayNameFor(model => model.Photo)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LogoUrl)
+            <!-- Exibe a imagem da logo -->
+            <img src="@Model.ImageFullPath" alt="Team Logo" class="logo-img" />
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Foundation)

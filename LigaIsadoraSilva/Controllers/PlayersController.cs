@@ -112,26 +112,30 @@ namespace LigaIsadoraSilva.Controllers
 
             if (ModelState.IsValid)
             {
-                var oldPlayer = _context.Players.FirstOrDefault(x => x.Id == player.Id);
+                var oldPlayer = await _context.Players.FindAsync(player.Id);
+
+                if (oldPlayer == null)
+                {
+                    return NotFound();
+                }
 
                 try
                 {
                     if (player.ImageFile != null)
                     {
+                        // Fazendo upload da nova imagem
                         string newImageUrl = await _imageHelper.UploadImageAsync(player.ImageFile, "Player");
-                        player.Photo = newImageUrl;
-                    }
-                    else
-                    {
-                        player.Photo = oldPlayer?.Photo;
+                        oldPlayer.Photo = newImageUrl; // Atualizando a imagem no objeto rastreado
                     }
 
+                    // Atualizando os outros campos
                     oldPlayer.Birth = player.Birth;
                     oldPlayer.Surname = player.Surname;
                     oldPlayer.Name = player.Name;
                     oldPlayer.Nationality = player.Nationality;
                     oldPlayer.ClubId = player.ClubId;
 
+                    // Salvando as alterações no banco de dados
                     _context.Update(oldPlayer);
                     await _context.SaveChangesAsync();
                 }

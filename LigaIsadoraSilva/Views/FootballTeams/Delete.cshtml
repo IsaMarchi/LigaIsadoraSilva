@@ -45,6 +45,11 @@
     dl {
         margin: 0;
     }
+
+    .logo-img {
+        max-width: 200px; /* Definir o tamanho máximo da imagem */
+        height: auto;
+    }
 </style>
 
 <h1>Delete</h1>
@@ -60,41 +65,48 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
+
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Coach)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Coach)
         </dd>
+
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Stadium)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Stadium)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.LogoUrl)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LogoUrl)
-        </dd>
+
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Foundation)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Foundation)
         </dd>
+
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Points)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Points)
         </dd>
+
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.MatchesPlayed)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.MatchesPlayed)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Photo)
+        </dt>
+        <dd class="col-sm-10">
+            <!-- Exibe a imagem da logo -->
+            <img src="@Model.ImageFullPath" alt="Team Logo" class="logo-img" />
         </dd>
     </dl>
 

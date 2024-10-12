@@ -59,9 +59,21 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+            <!-- Image Field -->
+            <div class="form-group">
+                <label asp-for="ImageFullPath" class="control-label">Player Photo</label>
+                <div>
+                    <img src="@Model.ImageFullPath" alt="Photo" class="img-thumbnail" style="max-width: 150px;" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" type="file" class="form-control" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -78,13 +90,8 @@
                 <span asp-validation-for="Stadium" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LogoUrl" class="control-label"></label>
-                <input asp-for="LogoUrl" class="form-control" />
-                <span asp-validation-for="LogoUrl" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Foundation" class="control-label"></label>
-                <input asp-for="Foundation" class="form-control" />
+                <input asp-for="Foundation" type="date" class="form-control" />
                 <span asp-validation-for="Foundation" class="text-danger"></span>
             </div>
             <div class="form-group">

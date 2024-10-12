@@ -59,7 +59,7 @@
                 @Html.DisplayNameFor(model => model.Stadium)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LogoUrl)
+                Logo
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Foundation)
@@ -87,10 +87,10 @@
                     @Html.DisplayFor(modelItem => item.Stadium)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.LogoUrl)
+                    <img src="@item.ImageFullPath" alt="Image" style="max-width:100px; max-height:100px;" />
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Foundation)
+                    @item.Foundation.ToString("dd/MM/yyyy")
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Points)

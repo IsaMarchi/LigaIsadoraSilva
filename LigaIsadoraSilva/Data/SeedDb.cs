@@ -50,7 +50,7 @@ namespace LigaIsadoraSilva.Data
                 Name = name,
                 Coach = coach,
                 Stadium = stadium,
-                LogoUrl = logo,
+                Photo = logo,
                 Foundation = foundation,
                 Points = _random.Next(100),
                 MatchesPlayed = _random.Next(100),
