@@ -3,16 +3,20 @@ using LigaIsadoraSilva.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using LigaIsadoraSilva.Helpers;
-
+using LigaIsadoraSilva.Data.Repositories;
+using LigaIsadoraSilva.Data.Interface;
+using LigaIsadoraSilva.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Add DbContext with SQL Server connection
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Identity configuration
 builder.Services.AddIdentity<User, IdentityRole>(cfg =>
 {
     cfg.User.RequireUniqueEmail = true;
@@ -22,14 +26,24 @@ builder.Services.AddIdentity<User, IdentityRole>(cfg =>
     cfg.Password.RequireLowercase = false;
     cfg.Password.RequireNonAlphanumeric = false;
     cfg.Password.RequiredLength = 6;
-}).AddEntityFrameworkStores<DataContext>();
 
-// Registrar o IImageHelper no contêiner de serviços
+    // Desabilitar a confirmaÃ§Ã£o de conta via e-mail
+    cfg.SignIn.RequireConfirmedAccount = false;
+})
+    .AddDefaultTokenProviders()
+    .AddEntityFrameworkStores<DataContext>();
+
+//Services
+builder.Services.AddScoped<IUserHelper, UserHelper>();
 builder.Services.AddScoped<IImageHelper, ImageHelper>();
+
+// Register repositories and services
+builder.Services.AddScoped<IMatchRepository, MatchRepository>();
+builder.Services.AddScoped<IMatchService, MatchService>();
 
 var app = builder.Build();
 
-// Seed the database during application startup
+// Seed the database
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -37,7 +51,7 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<DataContext>();
         var seed = new SeedDb(context);
-        await seed.SeedAsync(); // Executa o seed
+        await seed.SeedAsync(); // Execute seed
     }
     catch (Exception ex)
     {
@@ -50,7 +64,6 @@ using (var scope = app.Services.CreateScope())
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    
     app.UseHsts();
 }
 
@@ -59,8 +72,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// Authentication and Authorization middlewares
+app.UseAuthentication();  // Ensure this comes before UseAuthorization
 app.UseAuthorization();
 
+// Map controller routes
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -4,6 +4,7 @@ using LigaIsadoraSilva.Data;
 using LigaIsadoraSilva.Data.Entities;
 using LigaIsadoraSilva.Helpers;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LigaIsadoraSilva.Controllers
 {
@@ -52,6 +53,7 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: Players/Create
+        [Authorize]
         public IActionResult Create()
         {
             var clubes = _context.Clubs;
@@ -82,6 +84,7 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: Players/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -160,6 +163,7 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: Players/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

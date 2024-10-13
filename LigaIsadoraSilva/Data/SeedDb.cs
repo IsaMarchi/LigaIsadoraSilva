@@ -1,4 +1,5 @@
 ﻿using LigaIsadoraSilva.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace LigaIsadoraSilva.Data
 {
@@ -69,6 +70,64 @@ namespace LigaIsadoraSilva.Data
                 Club = team
             });
         }
+
+        public static async Task SeedAsync(IServiceProvider serviceProvider)
+        {
+
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+
+            if (!await roleManager.RoleExistsAsync("Admin"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+
+            if (!await roleManager.RoleExistsAsync("Staff"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Staff"));
+            }
+
+            if (!await roleManager.RoleExistsAsync("Team"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Team"));
+            }
+
+            if (!await roleManager.RoleExistsAsync("Anonimous"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Anonimous"));
+            }
+
+            var adminUser = await userManager.FindByEmailAsync("marchiisadora@gmail.com");
+            if (adminUser == null)
+            {
+
+                var user = new User
+                {
+                    UserName = "marchiisadora@gmail.com",
+                    Email = "marchiisadora@gmail.com",
+                    //EmailConfirmed = true,
+                    Name = "Isadora",
+                    Surname = "Silva",
+                    TwoFactorEnabled = false,
+                };
+
+                var result = await userManager.CreateAsync(user, "123456");
+
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, "Admin");
+                }
+                else
+                {
+                    // Log the error messages
+                    foreach (var error in result.Errors)
+                    {
+                        Console.WriteLine(error.Description);
+                    }
+                }
+            }
+        }
+
     }
 }
 

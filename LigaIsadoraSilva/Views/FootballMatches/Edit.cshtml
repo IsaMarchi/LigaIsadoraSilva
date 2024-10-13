@@ -1,4 +1,4 @@
-﻿@model LigaIsadoraSilva.Data.Entities.FootballMatch
+﻿@model LigaIsadoraSilva.Models.EditFootballMatchViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -63,11 +63,6 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="StartDate" class="control-label"></label>
                 <input asp-for="StartDate" class="form-control" />
                 <span asp-validation-for="StartDate" class="text-danger"></span>
@@ -81,16 +76,6 @@
                 <label asp-for="VisitTeamId" class="control-label"></label>
                 <select asp-for="VisitTeamId" class="form-control" asp-items="ViewBag.VisitTeamId"></select>
                 <span asp-validation-for="VisitTeamId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="HomeGoals" class="control-label"></label>
-                <input asp-for="HomeGoals" class="form-control" />
-                <span asp-validation-for="HomeGoals" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VisitGoals" class="control-label"></label>
-                <input asp-for="VisitGoals" class="form-control" />
-                <span asp-validation-for="VisitGoals" class="text-danger"></span>
             </div>
             <div class="button-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

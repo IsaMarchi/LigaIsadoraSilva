@@ -10,7 +10,6 @@ namespace LigaIsadoraSilva.Data.Entities
         [Key]
         public int Id { get; set; }
 
-
         [Required]
         [StringLength(50, ErrorMessage = "The field {0} can contain {1} characters length.")]
         public string Name { get; set; }
@@ -29,6 +28,7 @@ namespace LigaIsadoraSilva.Data.Entities
 
         [Display(Name = "Matches Played")]
         public int MatchesPlayed { get; set; } = 0;
+
 
         [Display(Name = "Logo")]
         public string? Photo { get; set; }

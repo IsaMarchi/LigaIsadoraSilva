@@ -2,7 +2,7 @@
 using LigaIsadoraSilva.Data.Interface;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace LigaIsadoraSilva.Data
+namespace LigaIsadoraSilva.Data.Repositories
 {
     public class TeamRepository : ITeamRepository
     {

@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LigaIsadoraSilva.Data.Entities;
+using System.ComponentModel.DataAnnotations;
 
-namespace LigaIsadoraSilva.Data.Entities
+namespace LigaIsadoraSilva.Models
 {
-    public class FootballMatch: IEntity
+    public class EditFootballMatchViewModel
     {
         [Key]
         public int Id { get; set; }
@@ -30,6 +31,5 @@ namespace LigaIsadoraSilva.Data.Entities
 
         [Display(Name = "Visit Goals")]
         public int? VisitGoals { get; set; } // Gols marcados pelo clube visitante
-                                            
     }
 }

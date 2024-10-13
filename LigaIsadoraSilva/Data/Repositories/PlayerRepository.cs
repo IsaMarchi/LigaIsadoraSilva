@@ -2,7 +2,7 @@
 using LigaIsadoraSilva.Data.Interface;
 using Microsoft.EntityFrameworkCore;
 
-namespace LigaIsadoraSilva.Data
+namespace LigaIsadoraSilva.Data.Repositories
 {
     public class PlayerRepository : IPlayerRepository
     {
