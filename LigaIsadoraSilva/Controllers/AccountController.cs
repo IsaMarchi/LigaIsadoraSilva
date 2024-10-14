@@ -59,7 +59,7 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register (RegisterNewUserViewModel model)
+        public async Task<IActionResult> Register(RegisterNewUserViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -99,7 +99,75 @@ namespace LigaIsadoraSilva.Controllers
             }
 
             return View(model);
+        }
 
+        public async Task<IActionResult> ChangeUser()
+        {
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+            var model = new ChangeUserViewModel();
+            if (user != null)
+            {
+                model.FirstName = user.Name;
+                model.LastName = user.Surname;
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeUser(ChangeUserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                if (user != null)
+                {
+                    user.Name = model.FirstName;
+                    user.Surname = model.LastName;
+                    var response = await _userHelper.UpdateUserAsync(user);
+                    if (response.Succeeded)
+                    {
+                        ViewBag.UserMessage = "User updated!";
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, response.Errors.FirstOrDefault().Description);
+                    }
+                }
+            }
+            return View(model);
+        }
+
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                if (user != null)
+                {
+                    var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                    if (result.Succeeded)
+                    {
+                        return this.RedirectToAction("ChangeUser");
+                    }
+                    else
+                    {
+                        this.ModelState.AddModelError(string.Empty, result.Errors.FirstOrDefault().Description);
+                    }
+                }
+                else
+                {
+                    this.ModelState.AddModelError(string.Empty, "User not found.");
+                }
+            }
+
+            return this.View(model);
         }
 
         public IActionResult NotAuthorized()
@@ -107,36 +175,5 @@ namespace LigaIsadoraSilva.Controllers
             return View();
         }
 
-        public IActionResult ResetPassword(string token)
-        {
-            return View();
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
-        {
-            var user = await _userHelper.GetUserByEmailAsync(model.Email);
-            if (user != null)
-            {
-                var result = await _userHelper.ResetPasswordAsync(user, model.Token, model.Password);
-                if (result.Succeeded)
-                {
-                    this.ViewBag.Message = "Password reset successful.";
-                    if (!user.EmailConfirmed)
-                    {
-                        var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-                        await _userHelper.ConfirmEmailAsync(user, token);
-                    }
-                    return View();
-                }
-
-                this.ViewBag.Message = "Error while resetting the password.";
-                return View(model);
-            }
-
-            this.ViewBag.Message = "User not found.";
-            return View(model);
-        }
     }
 }

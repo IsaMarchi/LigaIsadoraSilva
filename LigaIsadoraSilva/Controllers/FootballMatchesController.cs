@@ -154,6 +154,7 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: FootballMatches/Finalizar/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Finalise(int? id)
         {
             if (id == null)
@@ -201,7 +202,7 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: FootballMatches/Create
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["HomeTeamId"] = new SelectList(_context.Clubs, "Id", "Name");
@@ -225,7 +226,7 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: FootballMatches/Edit/5
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -298,58 +299,8 @@ namespace LigaIsadoraSilva.Controllers
             return View(viewModel);
         }
 
-
-        //// POST: FootballMatches/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, FootballMatch footballMatch)
-        //{
-        //    if (id != footballMatch.Id)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        var oldFootballMatch = await _context.Games.FindAsync(footballMatch.Id);
-
-        //        if (oldFootballMatch == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        try
-        //        {
-        //            oldFootballMatch.StartDate = footballMatch.StartDate;
-        //            oldFootballMatch.HomeTeamId = footballMatch.HomeTeamId;
-        //            oldFootballMatch.VisitTeamId = footballMatch.VisitTeamId;
-
-        //            // Salvando as alterações no banco de dados
-        //            _context.Update(oldFootballMatch);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!FootballMatchExists(footballMatch.Id))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-
-        //        return RedirectToAction(nameof(Index));
-
-        //    }
-        //    var clubs = _context.Clubs;
-        //    ViewData["HomeTeamId"] = new SelectList(clubs, "Id", "Name", footballMatch.HomeTeamId);
-        //    ViewData["VisitTeamId"] = new SelectList(clubs, "Id", "Name", footballMatch.VisitTeamId);
-        //    return View(footballMatch);
-        //}
-
         // GET: FootballMatches/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

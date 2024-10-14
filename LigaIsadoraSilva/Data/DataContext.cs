@@ -10,7 +10,11 @@ namespace LigaIsadoraSilva.Data
         public DbSet<FootballMatch> Games { get; set; }
         public DbSet<Player> Players { get; set; }
         public DbSet<FootballTeam> Clubs { get; set; }
-  
+        public DbSet<Staff> Staffs { get; set; }
+        public DbSet<StaffDuty> StaffDuties { get; set; }
+        public DbSet<PayersPosition> PayersPositions { get; set; }
+
+
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
@@ -37,6 +41,12 @@ namespace LigaIsadoraSilva.Data
                 .WithMany(t => t.Players) // Um clube pode ter muitos jogadores
                 .HasForeignKey(p => p.ClubId) // Utiliza ClubId como chave estrangeira
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Staff>()
+               .HasOne(p => p.Club) // Associa o staff a um clube
+               .WithMany(t => t.Staffs) // Um clube pode ter muitos staffs
+               .HasForeignKey(p => p.ClubId) // Utiliza ClubId como chave estrangeira
+               .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

@@ -52,7 +52,7 @@ namespace LigaIsadoraSilva.Data.Entities
 
         // Coleção de jogadores que pertencem a este time
         public ICollection<Player>? Players { get; set; } = new List<Player>(); // Inicialização para evitar NullReferenceException
-
+        public ICollection<Staff> Staffs { get; set; }
         // Coleções de partidas jogadas em casa e fora
         public ICollection<FootballMatch>? HomeGames { get; set; } = new List<FootballMatch>();
         public ICollection<FootballMatch>? VisitGames { get; set; } = new List<FootballMatch>();

@@ -50,8 +50,8 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<DataContext>();
-        var seed = new SeedDb(context);
-        await seed.SeedAsync(); // Execute seed
+        //var seed = new SeedDb(context);
+        
     }
     catch (Exception ex)
     {
