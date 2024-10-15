@@ -1,6 +1,7 @@
 ﻿using LigaIsadoraSilva.Data.Entities;
 using LigaIsadoraSilva.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace LigaIsadoraSilva.Helpers
 {
@@ -85,9 +86,28 @@ namespace LigaIsadoraSilva.Helpers
             await _signInManager.SignOutAsync();
         }
 
-        public async Task<IdentityResult> ResetPasswordAsync(User user, string token, string password)
+        public async Task<IdentityResult> ResetPasswordAsync(string email, string token, string newPassword)
         {
-            return await _userManager.ResetPasswordAsync(user, token, password);
+            // Obtém o usuário pelo e-mail
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                // Se o usuário não for encontrado, retorna um erro
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Description = "Usuário não encontrado."
+                });
+            }
+
+            // Reseta a senha utilizando o token e a nova senha fornecida
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            return result;
+        }
+
+        public Task<IdentityResult> ResetPasswordAsync(User user, string token, string password)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<IdentityResult> UpdateUserAsync(User user)

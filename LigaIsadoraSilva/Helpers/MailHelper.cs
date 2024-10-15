@@ -1,5 +1,4 @@
-﻿using Azure;
-using LigaIsadoraSilva.Data.Interface;
+﻿using LigaIsadoraSilva.Data.Interface;
 using MailKit.Net.Smtp;
 using MimeKit;
 
@@ -14,7 +13,7 @@ namespace LigaIsadoraSilva.Helpers
             _configuration = configuration;
         }
 
-        public Response SendEmail(string to, string subject, string body)
+        public async Task<Response> SendEmail(string to, string subject, string body)
         {
             var nameFrom = _configuration["Mail:NameFrom"];
             var from = _configuration["Mail:From"];
@@ -42,10 +41,10 @@ namespace LigaIsadoraSilva.Helpers
                         return true;
                     };
 
-                    client.Connect(smtp, int.Parse(port), false);
-                    client.Authenticate(from, password);
-                    client.Send(message);
-                    client.Disconnect(true);
+                   client.Connect(smtp, int.Parse(port), false);
+                   client.Authenticate(from, password);
+                   client.Send(message);
+                   client.Disconnect(true);
                 }
             }
             catch (Exception ex)
@@ -65,9 +64,6 @@ namespace LigaIsadoraSilva.Helpers
             };
         }
 
-        Azure.Response IMailHelper.SendEmail(string to, string subject, string body)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

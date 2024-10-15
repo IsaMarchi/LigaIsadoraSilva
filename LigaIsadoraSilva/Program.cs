@@ -34,6 +34,7 @@ builder.Services.AddIdentity<User, IdentityRole>(cfg =>
     .AddEntityFrameworkStores<DataContext>();
 
 //Services
+builder.Services.AddScoped<IMailHelper, MailHelper>();
 builder.Services.AddScoped<IUserHelper, UserHelper>();
 builder.Services.AddScoped<IImageHelper, ImageHelper>();
 builder.Services.ConfigureApplicationCookie(options =>

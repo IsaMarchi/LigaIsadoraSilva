@@ -1,0 +1,63 @@
+﻿@model LigaIsadoraSilva.Models.DashboardViewModel
+
+<style>
+    body {
+        background-color: black;
+        color: white;
+    }
+
+    .table {
+        background-color: white;
+        color: black;
+    }
+
+        .table th, .table td {
+            color: black;
+        }
+
+    h1 {
+        color: white;
+    }
+
+    .btn-primary {
+        background-color: #66ff66;
+        border-color: #66ff66;
+        color: black;
+        font-weight: bold;
+    }
+
+    .action-buttons {
+        white-space: nowrap;
+    }
+
+        .action-buttons a {
+            margin-right: 5px;
+        }
+</style>
+
+<h1>Dashboard</h1>
+
+@if (Model.MatchesToClose != null && Model.MatchesToClose.Any())
+{
+    <div class="alert alert-warning">
+        <strong>Attention!</strong> The following matches can be closed:
+        <ul>
+            @foreach (var match in Model.MatchesToClose)
+            {
+                <li>
+                    @match.HomeTeam.Name vs @match.VisitTeam.Name - @match.StartDate.ToShortDateString()
+                    <h1>Go to the matches page to update</h1>
+                    <button onclick="location.href='@Url.Action("Index", "FootballMatches")'" class="btn btn-primary">
+                        View Matches
+                    </button>
+                </li>
+            }
+        </ul>
+    </div>
+}
+else
+{
+    <div class="alert alert-success">
+        There are no matches to be closed at the moment.
+    </div>
+}

@@ -4,22 +4,24 @@ using LigaIsadoraSilva.Helpers;
 using LigaIsadoraSilva.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace LigaIsadoraSilva.Controllers
 {
     public class AccountController : Controller
     {
         private readonly IUserHelper _userHelper;
-        private readonly ITeamRepository _teamRepository;  // Repositório de times
+        private readonly ITeamRepository _teamRepository;
+        private readonly IMailHelper _emailService;  // Serviço de envio de email
 
         public AccountController(IConfiguration configuration,
-            IUserHelper userHelper,
-            ITeamRepository teamRepository)
+                                 IUserHelper userHelper,
+                                 ITeamRepository teamRepository,
+                                 IMailHelper emailService)
         {
             _userHelper = userHelper;
             _teamRepository = teamRepository;
+            _emailService = emailService;
         }
 
         public IActionResult Login()
@@ -40,12 +42,19 @@ namespace LigaIsadoraSilva.Controllers
                 var result = await _userHelper.LoginAsync(model);
                 if (result.Succeeded)
                 {
+                    // Verifique se o usuário está no papel de Admin
+                    var user = await _userHelper.GetUserByEmailAsync(model.UserName);
+                    if (user != null && await _userHelper.IsUserInRoleAsync(user, "Admin")) // Assumindo que o nome do papel é "Admin"
+                    {
+                        return RedirectToAction("Index", "Dashboard"); // Redirecione para o Dashboard
+                    }
+
                     if (this.Request.Query.Keys.Contains("ReturnUrl"))
                     {
                         return Redirect(this.Request.Query["ReturnUrl"].First());
                     }
 
-                    return this.RedirectToAction("Index", "Home");
+                    return this.RedirectToAction("Index", "Home"); // Redirecione para a Home para outros usuários
                 }
             }
 
@@ -61,8 +70,10 @@ namespace LigaIsadoraSilva.Controllers
 
         public IActionResult Register()
         {
-            var model = new RegisterNewUserViewModel();
-            model.FootballTeams = _teamRepository.GetFootballTeams().ToList();
+            var model = new RegisterNewUserViewModel
+            {
+                FootballTeams = _teamRepository.GetFootballTeams().ToList()
+            };
             return View(model);
         }
 
@@ -83,13 +94,12 @@ namespace LigaIsadoraSilva.Controllers
                         UserName = model.Username,
                     };
 
-                    // Associar o usuário ao FootballTeam, se selecionado
                     if (model.FootballTeamId.HasValue)
                     {
                         var footballTeam = await _teamRepository.GetFootballTeamByIdAsync(model.FootballTeamId.Value);
                         if (footballTeam != null)
                         {
-                            user.FootballTeam = footballTeam; // Associar o time de futebol ao usuário
+                            user.FootballTeam = footballTeam;
                         }
                         else
                         {
@@ -98,7 +108,6 @@ namespace LigaIsadoraSilva.Controllers
                         }
                     }
 
-                    // Adicionar usuário
                     var result = await _userHelper.AddUserAsync(user, model.Password);
                     if (result != IdentityResult.Success)
                     {
@@ -106,7 +115,6 @@ namespace LigaIsadoraSilva.Controllers
                         return View(model);
                     }
 
-                    // Associar o usuário ao papel apropriado (Club ou Staff)
                     await _userHelper.AddUserToRoleAsync(user, model.UserRole);
                     if (!await _userHelper.IsUserInRoleAsync(user, model.UserRole))
                     {
@@ -114,7 +122,6 @@ namespace LigaIsadoraSilva.Controllers
                         return View(model);
                     }
 
-                    // Redirecionar após o registro bem-sucedido
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -154,7 +161,7 @@ namespace LigaIsadoraSilva.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, response.Errors.FirstOrDefault().Description);
+                        ModelState.AddModelError(string.Empty, response.Errors.FirstOrDefault()?.Description);
                     }
                 }
             }
@@ -181,7 +188,7 @@ namespace LigaIsadoraSilva.Controllers
                     }
                     else
                     {
-                        this.ModelState.AddModelError(string.Empty, result.Errors.FirstOrDefault().Description);
+                        this.ModelState.AddModelError(string.Empty, result.Errors.FirstOrDefault()?.Description);
                     }
                 }
                 else
@@ -197,5 +204,86 @@ namespace LigaIsadoraSilva.Controllers
         {
             return View();
         }
+
+        // Forgot Password
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userHelper.GetUserByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    return RedirectToAction("ForgotPasswordConfirmation");
+                }
+
+                var token = await _userHelper.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action("ResetPassword", "Account",
+                    new { email = model.Email, token = token }, protocol: HttpContext.Request.Scheme);
+
+                 _emailService.SendEmail(user.Email, "Reset Password",$"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+
+                return RedirectToAction("ForgotPasswordConfirmation");
+            }
+
+            return View(model);
+        }
+
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+        // Reset Password
+        public IActionResult ResetPassword(string token, string email)
+        {
+            if (token == null || email == null)
+            {
+                return RedirectToAction("Error");
+            }
+
+            var model = new ResetPasswordViewModel { Token = token, Email = email };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Obtenha o usuário pelo e-mail
+                var user = await _userHelper.GetUserByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    var result = await _userHelper.ResetPasswordAsync(user, model.Token, model.Password);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("ResetPasswordConfirmation");
+                    }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "User not found.");
+                }
+            }
+            return View(model);
+        }
+
+        public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
     }
 }
+
+

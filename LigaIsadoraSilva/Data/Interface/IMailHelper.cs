@@ -1,9 +1,10 @@
-﻿using Azure;
+﻿using LigaIsadoraSilva.Helpers;
+using System.Threading.Tasks;
 
 namespace LigaIsadoraSilva.Data.Interface
 {
     public interface IMailHelper
     {
-        Response SendEmail(string to, string subject, string body);
+        Task<Response> SendEmail(string to, string subject, string body);
     }
 }
