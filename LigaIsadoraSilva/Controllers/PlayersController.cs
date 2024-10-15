@@ -22,12 +22,26 @@ namespace LigaIsadoraSilva.Controllers
         // GET: Players
         public async Task<IActionResult> Index()
         {
-            // Incluindo a propriedade Club para carregar o clube associado ao jogador
-            // Ordenando jogadores em ordem alfabética pelo nome
             var players = await _context.Players
-                .Include(p => p.Club) // Eager loading do clube
-                .OrderBy(p => p.Name) // Ordena por nome
+                .Include(p => p.Club)
+                .OrderBy(p => p.Name)
                 .ToListAsync();
+
+            // Se o usuário não estiver autenticado, fornecer dados simplificados
+            if (!User.Identity.IsAuthenticated)
+            {
+                // Retornar apenas os dados simplificados para o usuário anônimo
+                var anonymousPlayers = players.Select(p => new
+                {
+                    p.Name,
+                    //Position = p.PlayersPosition.Name, // Supondo que haja uma relação de posição
+                    Club = p.Club.Name
+                });
+
+                // Passar dados simplificados para a view (utilize ViewBag ou crie um view model)
+                ViewBag.AnonymousPlayers = anonymousPlayers;
+                return View("AnonymousIndex");
+            }
 
             return View(players);
         }
@@ -37,27 +51,29 @@ namespace LigaIsadoraSilva.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var player = await _context.Players
-                .Include(p => p.Club) // Incluindo o clube nos detalhes
+                .Include(p => p.Club)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (player == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             return View(player);
         }
 
         // GET: Players/Create
-        [Authorize]
+        [Authorize(Roles = "Team")]
         public IActionResult Create()
         {
             var clubes = _context.Clubs;
+            var positions = _context.PayersPositions;
             ViewData["ClubId"] = new SelectList(clubes, "Id", "Name");
+            ViewData["PlayersPositionId"] = new SelectList(positions, "Id", "Name");
             return View();
         }
 
@@ -79,27 +95,31 @@ namespace LigaIsadoraSilva.Controllers
             }
 
             var clubes = _context.Clubs;
+            var positions = _context.PayersPositions;
             ViewData["ClubId"] = new SelectList(clubes, "Id", "Name", player.ClubId);
+            ViewData["PlayersPositionId"] = new SelectList(positions, "Id", "Name", player.PlayersPositionId);
             return View(player);
         }
 
         // GET: Players/Edit/5
-        [Authorize]
+        [Authorize(Roles = "Team")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var player = await _context.Players.FindAsync(id);
             if (player == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var clubes = _context.Clubs;
+            var positions = _context.PayersPositions;
             ViewData["ClubId"] = new SelectList(clubes, "Id", "Name", player.ClubId);
+            ViewData["PlayersPositionId"] = new SelectList(positions, "Id", "Name", player.PlayersPositionId);
             return View(player);
         }
 
@@ -110,7 +130,7 @@ namespace LigaIsadoraSilva.Controllers
         {
             if (id != player.Id)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             if (ModelState.IsValid)
@@ -119,26 +139,24 @@ namespace LigaIsadoraSilva.Controllers
 
                 if (oldPlayer == null)
                 {
-                    return NotFound();
+                    return new PageNotFoundViewResult("PageNotFound");
                 }
 
                 try
                 {
                     if (player.ImageFile != null)
                     {
-                        // Fazendo upload da nova imagem
                         string newImageUrl = await _imageHelper.UploadImageAsync(player.ImageFile, "Player");
-                        oldPlayer.Photo = newImageUrl; // Atualizando a imagem no objeto rastreado
+                        oldPlayer.Photo = newImageUrl;
                     }
 
-                    // Atualizando os outros campos
                     oldPlayer.Birth = player.Birth;
                     oldPlayer.Surname = player.Surname;
                     oldPlayer.Name = player.Name;
                     oldPlayer.Nationality = player.Nationality;
                     oldPlayer.ClubId = player.ClubId;
+                    oldPlayer.PlayersPositionId = player.PlayersPositionId;
 
-                    // Salvando as alterações no banco de dados
                     _context.Update(oldPlayer);
                     await _context.SaveChangesAsync();
                 }
@@ -146,7 +164,7 @@ namespace LigaIsadoraSilva.Controllers
                 {
                     if (!PlayerExists(player.Id))
                     {
-                        return NotFound();
+                        return new PageNotFoundViewResult("PageNotFound");
                     }
                     else
                     {
@@ -158,26 +176,28 @@ namespace LigaIsadoraSilva.Controllers
             }
 
             var clubes = _context.Clubs;
+            var positions = _context.PayersPositions;
             ViewData["ClubId"] = new SelectList(clubes, "Id", "Name", player.ClubId);
+            ViewData["PlayersPositionId"] = new SelectList(positions, "Id", "Name", player.PlayersPositionId);
             return View(player);
         }
 
         // GET: Players/Delete/5
-        [Authorize]
+        [Authorize(Roles = "Team")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var player = await _context.Players
-                .Include(p => p.Club) // Incluindo o clube ao buscar para deletar
+                .Include(p => p.Club)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (player == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             return View(player);
@@ -202,6 +222,12 @@ namespace LigaIsadoraSilva.Controllers
         {
             return _context.Players.Any(e => e.Id == id);
         }
+
+        public IActionResult PageNotFound()
+        {
+            return View();
+        }
     }
 }
+
 

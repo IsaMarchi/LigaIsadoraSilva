@@ -8,10 +8,13 @@
 
   <ItemGroup>
     <Folder Include="Images\" />
+    <Folder Include="Filters\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="bootstrap" Version="5.3.3" />
     <PackageReference Include="Chart.js" Version="3.7.1" />
+    <PackageReference Include="jQuery" Version="3.7.1" />
     <PackageReference Include="MailKit" Version="4.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.10" />

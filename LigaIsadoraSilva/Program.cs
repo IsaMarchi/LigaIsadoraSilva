@@ -36,10 +36,17 @@ builder.Services.AddIdentity<User, IdentityRole>(cfg =>
 //Services
 builder.Services.AddScoped<IUserHelper, UserHelper>();
 builder.Services.AddScoped<IImageHelper, ImageHelper>();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/NotAuthorized";
+    options.AccessDeniedPath = "/Account/NotAuthorized";
+});
 
 // Register repositories and services
 builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 builder.Services.AddScoped<IMatchService, MatchService>();
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -50,8 +57,10 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<DataContext>();
-        //var seed = new SeedDb(context);
-        
+        var userHelper = services.GetRequiredService<IUserHelper>();
+        var seed = new SeedDb(context, userHelper);  // Passar o userHelper aqui
+        await seed.SeedAsync(services);
+
     }
     catch (Exception ex)
     {
@@ -66,6 +75,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+app.UseStatusCodePagesWithRedirects("/error/{0}");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

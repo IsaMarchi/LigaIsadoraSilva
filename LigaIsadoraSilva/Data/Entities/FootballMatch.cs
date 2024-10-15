@@ -2,7 +2,7 @@
 
 namespace LigaIsadoraSilva.Data.Entities
 {
-    public class FootballMatch: IEntity
+    public class FootballMatch : IEntity
     {
         [Key]
         public int Id { get; set; }
@@ -30,6 +30,11 @@ namespace LigaIsadoraSilva.Data.Entities
 
         [Display(Name = "Visit Goals")]
         public int? VisitGoals { get; set; } // Gols marcados pelo clube visitante
-                                            
+
+        [Display(Name = "Yellow Cards")]
+        public int? YellowCards { get; set; }
+
+        [Display(Name = "Red Cards")]
+        public int? RedCards { get; set; }
     }
 }

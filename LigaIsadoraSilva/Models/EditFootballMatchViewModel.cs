@@ -31,5 +31,11 @@ namespace LigaIsadoraSilva.Models
 
         [Display(Name = "Visit Goals")]
         public int? VisitGoals { get; set; } // Gols marcados pelo clube visitante
+
+        [Display(Name = "Yellow Cards")]
+        public int? YellowCards { get; set; }
+
+        [Display(Name = "Red Cards")]
+        public int? RedCards { get; set; }
     }
 }

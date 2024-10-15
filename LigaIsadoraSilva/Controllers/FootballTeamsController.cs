@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using LigaIsadoraSilva.Data;
 using LigaIsadoraSilva.Data.Entities;
 using LigaIsadoraSilva.Helpers;
-using System.Numerics;
 using Microsoft.AspNetCore.Authorization;
 
 namespace LigaIsadoraSilva.Controllers
@@ -22,6 +21,24 @@ namespace LigaIsadoraSilva.Controllers
         // GET: FootballTeams
         public async Task<IActionResult> Index()
         {
+            var clubs = await _context.Clubs
+                .OrderBy(p => p.Name)
+                .ToListAsync();
+            if (!User.Identity.IsAuthenticated)
+            {
+                // Retornar apenas os dados simplificados para o usuário anônimo
+                var anonymousPlayers = clubs.Select(p => new
+                {
+                    p.Name,
+                    p.Coach,
+                    p.Points
+                });
+
+                // Passar dados simplificados para a view (utilize ViewBag ou crie um view model)
+                ViewBag.AnonymousPlayers = anonymousPlayers;
+                return View("AnonymousIndex");
+            }
+
             return View(await _context.Clubs.ToListAsync());
         }
 
@@ -30,14 +47,14 @@ namespace LigaIsadoraSilva.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var footballTeam = await _context.Clubs
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (footballTeam == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             return View(footballTeam);
@@ -70,18 +87,18 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: FootballTeams/Edit/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Team")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var footballTeam = await _context.Clubs.FindAsync(id);
             if (footballTeam == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
             return View(footballTeam);
         }
@@ -93,7 +110,7 @@ namespace LigaIsadoraSilva.Controllers
         {
             if (id != footballTeam.Id)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             if (ModelState.IsValid)
@@ -102,7 +119,7 @@ namespace LigaIsadoraSilva.Controllers
 
                 if (oldTeam == null)
                 {
-                    return NotFound();
+                    return new PageNotFoundViewResult("PageNotFound");
                 }
 
                 try
@@ -130,7 +147,7 @@ namespace LigaIsadoraSilva.Controllers
                 {
                     if (!FootballTeamExists(footballTeam.Id))
                     {
-                        return NotFound();
+                        return new PageNotFoundViewResult("PageNotFound");
                     }
                     else
                     {
@@ -148,14 +165,14 @@ namespace LigaIsadoraSilva.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var footballTeam = await _context.Clubs
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (footballTeam == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             return View(footballTeam);
@@ -179,6 +196,11 @@ namespace LigaIsadoraSilva.Controllers
         private bool FootballTeamExists(int id)
         {
             return _context.Clubs.Any(e => e.Id == id);
+        }
+
+        public IActionResult PageNotFound()
+        {
+            return View();
         }
     }
 }

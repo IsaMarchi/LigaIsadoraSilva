@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LigaIsadoraSilva.Data;
 using LigaIsadoraSilva.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
+using LigaIsadoraSilva.Helpers;
 
 namespace LigaIsadoraSilva.Controllers
 {
@@ -30,31 +32,30 @@ namespace LigaIsadoraSilva.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var staffDuty = await _context.StaffDuties
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (staffDuty == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             return View(staffDuty);
         }
 
         // GET: StaffDuties/Create
+        [Authorize(Roles = "Team")]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: StaffDuties/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description")] StaffDuty staffDuty)
+        public async Task<IActionResult> Create(StaffDuty staffDuty)
         {
             if (ModelState.IsValid)
             {
@@ -66,31 +67,30 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: StaffDuties/Edit/5
+        [Authorize(Roles = "Team")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var staffDuty = await _context.StaffDuties.FindAsync(id);
             if (staffDuty == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
             return View(staffDuty);
         }
 
         // POST: StaffDuties/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] StaffDuty staffDuty)
+        public async Task<IActionResult> Edit(int id, StaffDuty staffDuty)
         {
             if (id != staffDuty.Id)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             if (ModelState.IsValid)
@@ -104,7 +104,7 @@ namespace LigaIsadoraSilva.Controllers
                 {
                     if (!StaffDutyExists(staffDuty.Id))
                     {
-                        return NotFound();
+                        return new PageNotFoundViewResult("PageNotFound");
                     }
                     else
                     {
@@ -117,18 +117,19 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: StaffDuties/Delete/5
+        [Authorize(Roles = "Team")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var staffDuty = await _context.StaffDuties
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (staffDuty == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             return View(staffDuty);
@@ -153,5 +154,11 @@ namespace LigaIsadoraSilva.Controllers
         {
             return _context.StaffDuties.Any(e => e.Id == id);
         }
+
+        public IActionResult PageNotFound()
+        {
+            return View();
+        }
     }
 }
+

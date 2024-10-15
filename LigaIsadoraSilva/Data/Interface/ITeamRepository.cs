@@ -10,6 +10,8 @@ namespace LigaIsadoraSilva.Data.Interface
 
         FootballTeam GetFootballTeam(int id);
 
+        Task<FootballTeam> GetFootballTeamByIdAsync(int id);
+
         IEnumerable<FootballTeam> GetFootballTeams();
 
         Task<bool> SaveAllAsync();

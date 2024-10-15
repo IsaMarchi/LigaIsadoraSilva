@@ -4,6 +4,7 @@ using LigaIsadoraSilva.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LigaIsadoraSilva.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241014161534_AddYellowAndRedCardsToFootballMatch")]
+    partial class AddYellowAndRedCardsToFootballMatch
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -247,9 +250,6 @@ namespace LigaIsadoraSilva.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("FootballTeamId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -295,8 +295,6 @@ namespace LigaIsadoraSilva.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FootballTeamId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -499,15 +497,6 @@ namespace LigaIsadoraSilva.Migrations
                     b.Navigation("StaffDutiy");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LigaIsadoraSilva.Data.Entities.User", b =>
-                {
-                    b.HasOne("LigaIsadoraSilva.Data.Entities.FootballTeam", "FootballTeam")
-                        .WithMany()
-                        .HasForeignKey("FootballTeamId");
-
-                    b.Navigation("FootballTeam");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

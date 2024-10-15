@@ -46,5 +46,10 @@ namespace LigaIsadoraSilva.Data.Repositories
         {
             return _context.Clubs.Any(p => p.Id == id);
         }
+
+        public async Task<FootballTeam> GetFootballTeamByIdAsync(int id)
+        {
+            return await _context.Clubs.FindAsync(id);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LigaIsadoraSilva.Data.Entities
 {
@@ -14,6 +15,10 @@ namespace LigaIsadoraSilva.Data.Entities
 
         [Display(Name = "Profile Picture")]
         public string? ImageUrl { get; set; }
+
+        [ForeignKey("FootballTeam")]
+        public int? FootballTeamId { get; set; } 
+        public FootballTeam? FootballTeam { get; set; }
 
         public string? ImageFullPath
         {

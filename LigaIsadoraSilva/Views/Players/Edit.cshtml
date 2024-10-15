@@ -89,6 +89,12 @@
                 <select asp-for="ClubId" class="form-control" asp-items="ViewBag.ClubId"></select>
             </div>
 
+            <div class="form-group">
+                <label asp-for="PlayersPositionId" class="control-label">Player Position</label>
+                <select asp-for="PlayersPositionId" class="form-control" asp-items="ViewBag.PlayersPositionId"></select>
+                <span asp-validation-for="PlayersPositionId" class="text-danger"></span>
+            </div>
+
             <!-- Image Field -->
             <div class="form-group">
                 <label asp-for="ImageFullPath" class="control-label">Player Photo</label>

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace LigaIsadoraSilva.Helpers
 {
-    public class UserHelper: IUserHelper
+    public class UserHelper : IUserHelper
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
@@ -26,7 +26,7 @@ namespace LigaIsadoraSilva.Helpers
 
         public async Task AddUserToRoleAsync(User user, string roleName)
         {
-            await _userManager.AddToRoleAsync(user, roleName);
+             await _userManager.AddToRoleAsync(user, roleName);
         }
 
         public async Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword)
@@ -96,3 +96,4 @@ namespace LigaIsadoraSilva.Helpers
         }
     }
 }
+

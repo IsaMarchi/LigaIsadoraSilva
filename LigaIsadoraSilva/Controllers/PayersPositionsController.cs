@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LigaIsadoraSilva.Data;
 using LigaIsadoraSilva.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
+using LigaIsadoraSilva.Helpers;
 
 namespace LigaIsadoraSilva.Controllers
 {
@@ -30,31 +32,30 @@ namespace LigaIsadoraSilva.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var payersPosition = await _context.PayersPositions
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (payersPosition == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             return View(payersPosition);
         }
 
         // GET: PayersPositions/Create
+        [Authorize(Roles = "Club")]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: PayersPositions/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] PayersPosition payersPosition)
+        public async Task<IActionResult> Create( PayersPosition payersPosition)
         {
             if (ModelState.IsValid)
             {
@@ -66,31 +67,30 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: PayersPositions/Edit/5
+        [Authorize(Roles = "Club")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var payersPosition = await _context.PayersPositions.FindAsync(id);
             if (payersPosition == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
             return View(payersPosition);
         }
 
         // POST: PayersPositions/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] PayersPosition payersPosition)
+        public async Task<IActionResult> Edit(int id, PayersPosition payersPosition)
         {
             if (id != payersPosition.Id)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             if (ModelState.IsValid)
@@ -104,7 +104,7 @@ namespace LigaIsadoraSilva.Controllers
                 {
                     if (!PayersPositionExists(payersPosition.Id))
                     {
-                        return NotFound();
+                        return new PageNotFoundViewResult("PageNotFound");
                     }
                     else
                     {
@@ -117,18 +117,19 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: PayersPositions/Delete/5
+        [Authorize(Roles = "Club")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var payersPosition = await _context.PayersPositions
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (payersPosition == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             return View(payersPosition);
@@ -152,6 +153,11 @@ namespace LigaIsadoraSilva.Controllers
         private bool PayersPositionExists(int id)
         {
             return _context.PayersPositions.Any(e => e.Id == id);
+        }
+
+        public IActionResult PageNotFound()
+        {
+            return View();
         }
     }
 }

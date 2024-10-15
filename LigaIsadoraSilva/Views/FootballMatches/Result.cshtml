@@ -4,7 +4,14 @@
     ViewData["Title"] = "Result";
 }
 
-<h1>Inserir Resultado</h1>
+<h1>Resultado</h1>
+
+@if (ViewBag.GameNotHappened != null && ViewBag.GameNotHappened == true)
+{
+    <div class="alert alert-danger">
+        Sorry! You can't carry out operations for a game that hasn't happened yet...
+    </div>
+}
 
 <div class="row">
     <div class="col-md-4">
@@ -20,8 +27,19 @@
                 <input asp-for="VisitGoals" class="form-control" />
                 <span asp-validation-for="VisitGoals" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="RedCards" class="control-label"></label>
+                <input asp-for="RedCards" class="form-control" />
+                <span asp-validation-for="RedCards" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="YellowCards" class="control-label"></label>
+                <input asp-for="YellowCards" class="form-control" />
+                <span asp-validation-for="YellowCards" class="text-danger"></span>
+            </div>
             <input type="submit" value="Salvar" class="btn btn-primary" />
             <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
 </div>
+

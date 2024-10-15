@@ -1,0 +1,62 @@
+﻿@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "AnonymousIndex";
+}
+
+<style>
+    body {
+        background-color: black;
+        color: white;
+    }
+
+    .table {
+        background-color: white;
+        color: black;
+    }
+
+        .table th, .table td {
+            color: black;
+        }
+
+    h1 {
+        color: white;
+    }
+
+    .btn-primary {
+        background-color: #66ff66;
+        border-color: #66ff66;
+        color: black;
+        font-weight: bold;
+    }
+
+    .action-buttons {
+        white-space: nowrap;
+    }
+
+        .action-buttons a {
+            margin-right: 5px;
+        }
+</style>
+
+<h1>Clubs List (Anonymus)</h1>
+
+<table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Name</th>
+            <th>Coach</th>
+            <th>Points</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewBag.AnonymousPlayers)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Coach</td>
+                <td>@item.Points</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

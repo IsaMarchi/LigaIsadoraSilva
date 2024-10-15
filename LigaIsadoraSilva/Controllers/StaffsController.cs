@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LigaIsadoraSilva.Data;
 using LigaIsadoraSilva.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
+using LigaIsadoraSilva.Helpers;
 
 namespace LigaIsadoraSilva.Controllers
 {
@@ -31,7 +33,7 @@ namespace LigaIsadoraSilva.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var staff = await _context.Staffs
@@ -40,13 +42,14 @@ namespace LigaIsadoraSilva.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (staff == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             return View(staff);
         }
 
         // GET: Staffs/Create
+        [Authorize(Roles = "Team")]
         public IActionResult Create()
         {
             ViewData["ClubId"] = new SelectList(_context.Clubs, "Id", "Coach");
@@ -55,8 +58,6 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // POST: Staffs/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ClubId,FullName,ContactNumber,Email,StaffDutyId,UserId")] Staff staff)
@@ -73,17 +74,18 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: Staffs/Edit/5
+        [Authorize(Roles = "Team")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var staff = await _context.Staffs.FindAsync(id);
             if (staff == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
             ViewData["ClubId"] = new SelectList(_context.Clubs, "Id", "Coach", staff.ClubId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", staff.UserId);
@@ -91,15 +93,13 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // POST: Staffs/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ClubId,FullName,ContactNumber,Email,StaffDutyId,UserId")] Staff staff)
         {
             if (id != staff.Id)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             if (ModelState.IsValid)
@@ -113,7 +113,7 @@ namespace LigaIsadoraSilva.Controllers
                 {
                     if (!StaffExists(staff.Id))
                     {
-                        return NotFound();
+                        return new PageNotFoundViewResult("PageNotFound");
                     }
                     else
                     {
@@ -128,11 +128,12 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         // GET: Staffs/Delete/5
+        [Authorize(Roles = "Team")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var staff = await _context.Staffs
@@ -141,7 +142,7 @@ namespace LigaIsadoraSilva.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (staff == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             return View(staff);
@@ -165,6 +166,11 @@ namespace LigaIsadoraSilva.Controllers
         private bool StaffExists(int id)
         {
             return _context.Staffs.Any(e => e.Id == id);
+        }
+
+        public IActionResult PageNotFound()
+        {
+            return View();
         }
     }
 }

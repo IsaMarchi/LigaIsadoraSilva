@@ -9,14 +9,14 @@ namespace LigaIsadoraSilva.Data
     {
         private readonly DataContext _context;
         private Random _random;
-        private UserHelper _userHelper;
+        private IUserHelper _userHelper;
 
-        public SeedDb(DataContext context, UserHelper userHelper)
+        public SeedDb(DataContext context, IUserHelper userHelper)
         {
             _context = context;
             _random = new Random();
             _userHelper = userHelper;
-    }
+        }
 
         private void AddClub(string name, string coach, string stadium, string logo, DateTime foundation)
         {
@@ -36,6 +36,14 @@ namespace LigaIsadoraSilva.Data
         {
             await _context.Database.EnsureCreatedAsync();
 
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+
+            if (!await roleManager.RoleExistsAsync("Admin"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+
             await _userHelper.CheckRoleAsync("Admin");
             await _userHelper.CheckRoleAsync("Staff");
 
@@ -54,13 +62,12 @@ namespace LigaIsadoraSilva.Data
                 };
 
                 var result = await _userHelper.AddUserAsync(user, "123456");
-
                 if (result != IdentityResult.Success)
                 {
                     throw new InvalidOperationException("Could not create the user in seeder");
                 }
 
-                await _userHelper.AddUserToRoleAsync(user, "admin");
+                await _userHelper.AddUserToRoleAsync(user, "Admin");
             }
 
             var IsInRole = await _userHelper.IsUserInRoleAsync(user, "Admin");
@@ -69,29 +76,25 @@ namespace LigaIsadoraSilva.Data
                 await _userHelper.AddUserToRoleAsync(user, "Admin");
             }
 
-            //var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            //var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            if (!await roleManager.RoleExistsAsync("Admin"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            }
 
-            //if (!await roleManager.RoleExistsAsync("Admin"))
-            //{
-            //    await roleManager.CreateAsync(new IdentityRole("Admin"));
-            //}
+            if (!await roleManager.RoleExistsAsync("Staff"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Staff"));
+            }
 
-            //if (!await roleManager.RoleExistsAsync("Staff"))
-            //{
-            //    await roleManager.CreateAsync(new IdentityRole("Staff"));
-            //}
+            if (!await roleManager.RoleExistsAsync("Team"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Team"));
+            }
 
-            //if (!await roleManager.RoleExistsAsync("Team"))
-            //{
-            //    await roleManager.CreateAsync(new IdentityRole("Team"));
-            //}
-
-            //if (!await roleManager.RoleExistsAsync("Anonimous"))
-            //{
-            //    await roleManager.CreateAsync(new IdentityRole("Anonimous"));
-            //}
-
+            if (!await roleManager.RoleExistsAsync("Anonimous"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Anonimous"));
+            }
 
         }
 

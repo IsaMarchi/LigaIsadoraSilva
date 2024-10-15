@@ -7,6 +7,8 @@ using LigaIsadoraSilva.Data.Interface;
 using LigaIsadoraSilva.Models;
 using System.Numerics;
 using Microsoft.AspNetCore.Authorization;
+using LigaIsadoraSilva.Helpers;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LigaIsadoraSilva.Controllers
 {
@@ -22,7 +24,7 @@ namespace LigaIsadoraSilva.Controllers
         }
 
         //Converte FootballMatch to ViewModel
-        private EditFootballMatchViewModel ConvertFootballMatchToMatchViewModel (FootballMatch match)
+        private EditFootballMatchViewModel ConvertFootballMatchToMatchViewModel(FootballMatch match)
         {
             return new EditFootballMatchViewModel
             {
@@ -35,11 +37,13 @@ namespace LigaIsadoraSilva.Controllers
                 VisitTeamId = match.VisitTeamId,
                 HomeGoals = match.HomeGoals,
                 VisitGoals = match.VisitGoals,
+                YellowCards = match.YellowCards,
+                RedCards = match.RedCards
             };
         }
 
         //Converte MatchesViewModel to FootballMatch
-        private FootballMatch ConvertViewModelToFootballMatch (EditFootballMatchViewModel viewModel)
+        private FootballMatch ConvertViewModelToFootballMatch(EditFootballMatchViewModel viewModel)
         {
             return new FootballMatch
             {
@@ -52,6 +56,8 @@ namespace LigaIsadoraSilva.Controllers
                 VisitTeamId = viewModel.VisitTeamId,
                 HomeGoals = viewModel.HomeGoals,
                 VisitGoals = viewModel.VisitGoals,
+                YellowCards = viewModel.YellowCards,
+                RedCards = viewModel.RedCards
             };
         }
 
@@ -68,7 +74,6 @@ namespace LigaIsadoraSilva.Controllers
             footballMatch.VisitGoals = viewModel.VisitGoals;
 
             return footballMatch;
-
         }
 
         // GET: FootballMatches
@@ -90,57 +95,61 @@ namespace LigaIsadoraSilva.Controllers
             return RedirectToAction(nameof(Index)); // Redirecione para a lista de partidas
         }
 
-        // GET: FootballMatches/Resultado/5
-        public async Task<IActionResult> Result(int? id)
+        // GET para editar YellowCards
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> YellowCard(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
-            var footballMatch = await _context.Games
-                .Include(f => f.HomeTeam)
-                .Include(f => f.VisitTeam)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
+            var footballMatch = await _context.Games.FindAsync(id);
             if (footballMatch == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             return View(footballMatch);
         }
 
-        // POST: FootballMatches/Resultado/5
+        //POST para salvar YellowCards
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Result(int id, FootballMatch footballMatch)
+        //POST para salvar YellowCards
+        public async Task<IActionResult> YellowCard(int id, FootballMatch footballMatch)
         {
             if (id != footballMatch.Id)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
+            }
+
+            var matchToUpdate = await _context.Games.FindAsync(id);
+            if (matchToUpdate == null)
+            {
+                return new PageNotFoundViewResult("PageNotFound");
+            }
+
+            if (DateTime.Now <= matchToUpdate.StartDate)
+            {
+                // Retornar a flag indicando que a operação foi bloqueada
+                ViewBag.GameNotHappened = true;
+                return View(footballMatch);
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    // Atualizar os gols
-                    var matchToUpdate = await _context.Games.FindAsync(id);
-                    if (matchToUpdate != null)
-                    {
-                        matchToUpdate.HomeGoals = footballMatch.HomeGoals;
-                        matchToUpdate.VisitGoals = footballMatch.VisitGoals;
-
-                        _context.Update(matchToUpdate);
-                        await _context.SaveChangesAsync();
-                    }
+                    matchToUpdate.YellowCards = footballMatch.YellowCards;
+                    _context.Update(matchToUpdate);
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!FootballMatchExists(footballMatch.Id))
                     {
-                        return NotFound();
+                        return new PageNotFoundViewResult("PageNotFound");
                     }
                     else
                     {
@@ -153,24 +162,183 @@ namespace LigaIsadoraSilva.Controllers
             return View(footballMatch);
         }
 
+
+
+        // GET para editar RedCards
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> RedCard(int? id)
+        {
+            if (id == null)
+            {
+                return new PageNotFoundViewResult("PageNotFound");
+            }
+
+            var footballMatch = await _context.Games.FindAsync(id);
+            if (footballMatch == null)
+            {
+                return new PageNotFoundViewResult("PageNotFound");
+            }
+
+            return View(footballMatch);
+        }
+
+        //POST para salvar RedCards
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RedCard(int id, FootballMatch footballMatch)
+        {
+            if (id != footballMatch.Id)
+            {
+                return new PageNotFoundViewResult("PageNotFound");
+            }
+
+            var matchToUpdate = await _context.Games.FindAsync(id);
+            if (matchToUpdate == null)
+            {
+                return new PageNotFoundViewResult("PageNotFound");
+            }
+
+            // Verifica se a data atual é anterior à data de início do jogo
+            if (DateTime.Now <= matchToUpdate.StartDate)
+            {
+                // Retornar a flag indicando que a operação foi bloqueada
+                ViewBag.GameNotHappened = true;
+                return View(footballMatch);
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    matchToUpdate.RedCards = footballMatch.RedCards;
+                    _context.Update(matchToUpdate);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!FootballMatchExists(footballMatch.Id))
+                    {
+                        return new PageNotFoundViewResult("PageNotFound");
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(footballMatch);
+        }
+
+        // GET: FootballMatches/Resultado/5
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> Result(int? id)
+        {
+            if (id == null)
+            {
+                return new PageNotFoundViewResult("PageNotFound");
+            }
+
+            var footballMatch = await _context.Games
+                .Include(f => f.HomeTeam)
+                .Include(f => f.VisitTeam)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (footballMatch == null)
+            {
+                return new PageNotFoundViewResult("PageNotFound");
+            }
+
+            // Verifica se a data atual é anterior à data de início do jogo
+            if (DateTime.Now <= footballMatch.StartDate)
+            {
+                // Retornar a flag indicando que a operação foi bloqueada
+                ViewBag.GameNotHappened = true;
+            }
+
+            return View(footballMatch);
+        }
+
+        // POST: FootballMatches/Resultado/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Result(int id, FootballMatch footballMatch)
+        {
+            if (id != footballMatch.Id)
+            {
+                return new PageNotFoundViewResult("PageNotFound");
+            }
+
+            var matchToUpdate = await _context.Games.FindAsync(id);
+            if (matchToUpdate == null)
+            {
+                return new PageNotFoundViewResult("PageNotFound");
+            }
+
+            // Verifica se a data atual é anterior à data de início do jogo
+            if (DateTime.Now <= matchToUpdate.StartDate)
+            {
+                // Retornar a flag indicando que a operação foi bloqueada
+                ViewBag.GameNotHappened = true;
+                return View(footballMatch); // Retorna para a mesma view com os dados atuais
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    matchToUpdate.HomeGoals = footballMatch.HomeGoals;
+                    matchToUpdate.VisitGoals = footballMatch.VisitGoals;
+                    matchToUpdate.YellowCards = footballMatch.YellowCards;
+                    matchToUpdate.RedCards = footballMatch.RedCards;
+
+                    _context.Update(matchToUpdate);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!FootballMatchExists(footballMatch.Id))
+                    {
+                        return new PageNotFoundViewResult("PageNotFound");
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(footballMatch);
+        }
+
+
         // GET: FootballMatches/Finalizar/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Finalise(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var footballMatch = await _context.Games.FindAsync(id);
             if (footballMatch == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
+            }
+
+            // Verifica se a data atual é anterior à data de início do jogo
+            if (DateTime.Now <= footballMatch.StartDate)
+            {
+                ViewBag.GameNotHappened = true;
+                return View("ErrorFinalise"); 
             }
 
             if (footballMatch.HomeGoals == null || footballMatch.VisitGoals == null)
             {
-                return BadRequest("Os resultados devem ser inseridos antes de finalizar o jogo.");
+                return View("ErrorFinalise"); ;
             }
 
             footballMatch.IsFinalized = true;
@@ -180,12 +348,13 @@ namespace LigaIsadoraSilva.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
         // GET: FootballMatches/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var footballMatch = await _context.Games
@@ -194,7 +363,7 @@ namespace LigaIsadoraSilva.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (footballMatch == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var viewModel = ConvertFootballMatchToMatchViewModel(footballMatch);
@@ -210,6 +379,7 @@ namespace LigaIsadoraSilva.Controllers
             return View();
         }
 
+        // POST: FootballMatches/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(FootballMatch footballMatch)
@@ -220,6 +390,7 @@ namespace LigaIsadoraSilva.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["HomeTeamId"] = new SelectList(_context.Clubs, "Id", "Name", footballMatch.HomeTeamId);
             ViewData["VisitTeamId"] = new SelectList(_context.Clubs, "Id", "Name", footballMatch.VisitTeamId);
             return View(footballMatch);
@@ -231,19 +402,19 @@ namespace LigaIsadoraSilva.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var footballMatch = await _context.Games.FindAsync(id);
-            if (footballMatch == null || footballMatch.IsFinalized)
+            if (footballMatch == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
-            var viewModel = ConvertFootballMatchToMatchViewModel(footballMatch);
+            ViewData["HomeTeamId"] = new SelectList(_context.Clubs, "Id", "Name", footballMatch.HomeTeamId);
+            ViewData["VisitTeamId"] = new SelectList(_context.Clubs, "Id", "Name", footballMatch.VisitTeamId);
 
-            ViewData["HomeTeamId"] = new SelectList(_context.Clubs, "Id", "Name", footballMatch?.HomeTeamId);
-            ViewData["VisitTeamId"] = new SelectList(_context.Clubs, "Id", "Name", footballMatch?.VisitTeamId);
+            var viewModel = ConvertFootballMatchToMatchViewModel(footballMatch);
             return View(viewModel);
         }
 
@@ -254,44 +425,33 @@ namespace LigaIsadoraSilva.Controllers
         {
             if (id != viewModel.Id)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             if (ModelState.IsValid)
             {
-
                 try
                 {
-                    var footballMatch = await _context.Games.FirstOrDefaultAsync(g => g.Id == id);
-                    if (footballMatch == null || footballMatch.IsFinalized)
+                    var footballMatch = await _context.Games.FindAsync(id);
+                    if (footballMatch != null)
                     {
-                        return NotFound();
-                    }
-
-                    // Atualiza o footballMatch com os valores do ViewModel
-                    if (await TryUpdateModelAsync(footballMatch, "",
-                        m => m.StartDate,
-                        m => m.IsFinalized,
-                        m => m.HomeTeamId,
-                        m => m.VisitTeamId,
-                        m => m.HomeGoals,
-                        m => m.VisitGoals))
-                    {
+                        footballMatch = await ConvertViewModelToMatchEdit(viewModel, footballMatch);
+                        _context.Update(footballMatch);
                         await _context.SaveChangesAsync();
-                        return RedirectToAction(nameof(Index));
                     }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!FootballMatchExists(viewModel.Id))
                     {
-                        return NotFound();
+                        return new PageNotFoundViewResult("PageNotFound");
                     }
                     else
                     {
                         throw;
                     }
                 }
+                return RedirectToAction(nameof(Index));
             }
 
             ViewData["HomeTeamId"] = new SelectList(_context.Clubs, "Id", "Name", viewModel.HomeTeamId);
@@ -305,7 +465,7 @@ namespace LigaIsadoraSilva.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             var footballMatch = await _context.Games
@@ -314,7 +474,7 @@ namespace LigaIsadoraSilva.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (footballMatch == null)
             {
-                return NotFound();
+                return new PageNotFoundViewResult("PageNotFound");
             }
 
             return View(footballMatch);
@@ -322,15 +482,13 @@ namespace LigaIsadoraSilva.Controllers
 
         // POST: FootballMatches/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var footballMatch = await _context.Games.FindAsync(id);
             if (footballMatch != null)
             {
                 _context.Games.Remove(footballMatch);
             }
-
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -338,6 +496,11 @@ namespace LigaIsadoraSilva.Controllers
         private bool FootballMatchExists(int id)
         {
             return _context.Games.Any(e => e.Id == id);
+        }
+
+        public IActionResult PageNotFound()
+        {
+            return View();
         }
     }
 }
