@@ -3,45 +3,44 @@
     ViewData["Title"] = "Football Statistics";
 }
 
-<h2>Games Statistic</h2>
+<h2>Championship statistics</h2>
 
 <button onclick="location.href='@Url.Action("TeamStandings", "Statistic")'" class="btn btn-primary">
-    Ver Classificação Geral
+    See General Classification
 </button>
 
 <canvas id="myChart" width="400" height="200"></canvas>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
-@* Componente de terceiro *@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     var ctx = document.getElementById('myChart').getContext('2d');
     var chart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Gols Casa', 'Gols Visitante', 'Total de Jogos', 'Vitórias Casa', 'Vitórias Visitante'],
+            labels: ['Games Played', 'Championship Goals', 'Home Wins', 'Yellow Cards', 'Red Cards'],
             datasets: [{
-                label: 'Estatísticas dos Jogos',
+                label: 'Championship statistics',
                 data: [
-    @Model.totalHomeGoals,
-    @Model.totalVisitGoals,
-    @Model.totalGames,
-    @Model.homeWins,
-    @Model.visitWins
+    @Model.TotalGames,
+    @Model.TotalGoals,
+    @Model.HomeWins,
+    @Model.TotalYellowCards,
+    @Model.TotalRedCards
                     ],
                 backgroundColor: [
                     'rgba(75, 192, 192, 0.2)',
                     'rgba(153, 102, 255, 0.2)',
                     'rgba(255, 159, 64, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 99, 132, 0.2)'
+                    'rgba(255, 206, 86, 0.2)', // Cartões amarelos
+                    'rgba(255, 99, 132, 0.2)'  // Cartões vermelhos
                 ],
                 borderColor: [
                     'rgba(75, 192, 192, 1)',
                     'rgba(153, 102, 255, 1)',
                     'rgba(255, 159, 64, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 99, 132, 1)'
+                    'rgba(255, 206, 86, 1)', // Cartões amarelos
+                    'rgba(255, 99, 132, 1)'  // Cartões vermelhos
                 ],
                 borderWidth: 1
             }]
@@ -55,3 +54,4 @@
         }
     });
 </script>
+

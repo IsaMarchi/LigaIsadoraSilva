@@ -5,39 +5,47 @@
 
 <h2>Classificação Geral</h2>
 
-<canvas id="teamStandingsChart" width="400" height="200"></canvas>
+@if (Model != null && Model.Count > 0)
+{
+    <canvas id="teamStandingsChart" width="400" height="200"></canvas>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    var ctx = document.getElementById('teamStandingsChart').getContext('2d');
-    var chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [
-    @foreach (var team in Model)
-    {
-        @: '@team.Key',
-    }
-                ],
-            datasets: [{
-                label: 'Pontos',
-                data: [
-    @foreach (var team in Model)
-    {
-        @: @team.Value,
-    }
-                    ],
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('teamStandingsChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+        @for (var i = 0; i < Model.Count; i++)
+        {
+            @: '@Model[i].Key'@((i < Model.Count - 1) ? "," : "")
+        }
+                        ],
+                datasets: [{
+                    label: 'Pontos',
+                    data: [
+        @for (var i = 0; i < Model.Count; i++)
+        {
+            @: @Model[i].Value@((i < Model.Count - 1) ? "," : "")
+        }
+                            ],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
-    });
-</script>
+        });
+    </script>
+}
+else
+{
+    <p>Nenhum dado disponível para exibir a classificação.</p>
+}
+

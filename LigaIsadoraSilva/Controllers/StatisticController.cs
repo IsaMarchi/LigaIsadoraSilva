@@ -18,6 +18,7 @@ namespace LigaIsadoraSilva.Controllers
         {
             // Obtém todas as partidas
             var matches = _context.Games
+                                  .Where(m => m.IsFinalized)
                                   .Include(m => m.HomeTeam)
                                   .Include(m => m.VisitTeam)
                                   .ToList();
@@ -38,16 +39,16 @@ namespace LigaIsadoraSilva.Controllers
                 // Adiciona pontos baseados no resultado da partida
                 if (match.HomeGoals > match.VisitGoals) // Vitória do time da casa
                 {
-                    teamPoints[match.HomeTeam.Name] += 3;
+                    teamPoints[match.HomeTeam.Name] += 3; // 3 pontos para o time da casa
                 }
                 else if (match.HomeGoals < match.VisitGoals) // Vitória do time visitante
                 {
-                    teamPoints[match.VisitTeam.Name] += 3;
+                    teamPoints[match.VisitTeam.Name] += 3; // 3 pontos para o time visitante
                 }
                 else // Empate
                 {
-                    teamPoints[match.HomeTeam.Name] += 1;
-                    teamPoints[match.VisitTeam.Name] += 1;
+                    teamPoints[match.HomeTeam.Name] += 1; // 1 ponto para o time da casa
+                    teamPoints[match.VisitTeam.Name] += 1; // 1 ponto para o time visitante
                 }
             }
 
@@ -59,24 +60,27 @@ namespace LigaIsadoraSilva.Controllers
 
         public IActionResult Index()
         {
-            var matches = _context.Games.ToList();
+            var matches = _context.Games
+                .Where(m => m.IsFinalized) // Somente jogos finalizados
+                .ToList();
 
-            var totalHomeGoals = matches.Sum(m => m.HomeGoals);
-            var totalVisitGoals = matches.Sum(m => m.VisitGoals);
-            var totalGames = matches.Count();
-            var homeWins = matches.Count(m => m.HomeGoals > m.VisitGoals);
-            var visitWins = matches.Count(m => m.VisitGoals > m.HomeGoals);
+            var totalGames = matches.Count(); // Total de jogos realizados
+            var totalGoals = matches.Sum(m => (m.HomeGoals ?? 0) + (m.VisitGoals ?? 0)); // Total de gols marcados
+            var totalYellowCards = matches.Sum(m => m.YellowCards ?? 0); // Total de cartões amarelos
+            var totalRedCards = matches.Sum(m => m.RedCards ?? 0); // Total de cartões vermelhos
+            var homeWins = matches.Count(m => m.HomeGoals > m.VisitGoals); // Total de vitórias em casa
 
             var stats = new
             {
-                totalHomeGoals,
-                totalVisitGoals,
-                totalGames,
-                homeWins,
-                visitWins
+                TotalGames = totalGames,
+                TotalGoals = totalGoals,
+                TotalYellowCards = totalYellowCards,
+                TotalRedCards = totalRedCards,
+                HomeWins = homeWins
             };
 
             return View(stats);
         }
     }
 }
+
