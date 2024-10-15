@@ -43,7 +43,21 @@
                                         <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Register">New User</a>
                                     </li>
                                     <li><a class="dropdown-item" asp-area="" asp-controller="" asp-action="">Users</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="" asp-action="">Roles</a></li>
+                                </ul>
+                            </li>
+                        }
+
+                        @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Team"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="true">Team Admin</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Staffs" asp-action="Index">New Staff</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="StaffDuties" asp-action="Index">Staff Duties</a>
+                                    </li>
                                 </ul>
                             </li>
                         }
