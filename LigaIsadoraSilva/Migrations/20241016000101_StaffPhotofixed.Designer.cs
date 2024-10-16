@@ -4,6 +4,7 @@ using LigaIsadoraSilva.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LigaIsadoraSilva.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241016000101_StaffPhotofixed")]
+    partial class StaffPhotofixed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,6 +106,24 @@ namespace LigaIsadoraSilva.Migrations
                     b.ToTable("Clubs");
                 });
 
+            modelBuilder.Entity("LigaIsadoraSilva.Data.Entities.PayersPosition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PayersPositions");
+                });
+
             modelBuilder.Entity("LigaIsadoraSilva.Data.Entities.Player", b =>
                 {
                     b.Property<int>("Id")
@@ -129,9 +150,8 @@ namespace LigaIsadoraSilva.Migrations
                     b.Property<string>("Photo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("PlayersPositionId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -140,6 +160,8 @@ namespace LigaIsadoraSilva.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClubId");
+
+                    b.HasIndex("PlayersPositionId");
 
                     b.ToTable("Players");
                 });
@@ -445,7 +467,13 @@ namespace LigaIsadoraSilva.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LigaIsadoraSilva.Data.Entities.PayersPosition", "PlayersPosition")
+                        .WithMany()
+                        .HasForeignKey("PlayersPositionId");
+
                     b.Navigation("Club");
+
+                    b.Navigation("PlayersPosition");
                 });
 
             modelBuilder.Entity("LigaIsadoraSilva.Data.Entities.Staff", b =>

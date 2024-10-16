@@ -31,10 +31,8 @@ namespace LigaIsadoraSilva.Data.Entities
 
         [Display(Name = "Profile Picture")]
         public string? Photo { get; set; }
-
-        [ForeignKey("PlayersPosition")]
-        public int? PlayersPositionId { get; set; }
-        public PayersPosition? PlayersPosition { get; set; }
+        
+        public string Position { get; set; }
 
         [NotMapped] // Esta propriedade não será mapeada no banco de dados
         [Display(Name = "Upload Image")]

@@ -3,7 +3,48 @@
 @{
     ViewData["Title"] = "Details";
 }
+<style>
+    body {
+        background-color: black;
+        color: white;
+    }
 
+    h1, h3, h4 {
+        color: white;
+    }
+
+    .btn-danger {
+        background-color: #ff6666;
+        border-color: #ff6666;
+        color: white;
+        font-weight: bold;
+    }
+
+    .btn-back {
+        background-color: #00cccc;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        margin-left: 10px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-back:hover {
+            background-color: #00b3b3;
+            color: white;
+        }
+
+    .form-group-inline {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    dl {
+        margin: 0;
+    }
+</style>
 <h1>Details</h1>
 
 <div>
@@ -40,12 +81,12 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.StaffDutyId)
         </dd>
-        <dt class = "col-sm-2">
+        @* <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.User)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.User.Id)
-        </dd>
+        </dd> *@
     </dl>
 </div>
 <div>

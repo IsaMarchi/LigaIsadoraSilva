@@ -1,30 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LigaIsadoraSilva.Data;
 using LigaIsadoraSilva.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using LigaIsadoraSilva.Helpers;
+using System.Numerics;
 
 namespace LigaIsadoraSilva.Controllers
 {
     public class StaffsController : Controller
     {
         private readonly DataContext _context;
+        private readonly IImageHelper _imageHelper;
 
-        public StaffsController(DataContext context)
+        public StaffsController(DataContext context, IImageHelper imageHelper)
         {
             _context = context;
+            _imageHelper = imageHelper;
         }
 
         // GET: Staffs
         public async Task<IActionResult> Index()
         {
-            var dataContext = _context.Staffs.Include(s => s.Club).Include(s => s.User);
+            var dataContext = _context.Staffs
+           .Include(s => s.Club)
+           //.Include(s => s.User)
+           .Include(s => s.StaffDuty);  
             return View(await dataContext.ToListAsync());
         }
 
@@ -38,7 +40,7 @@ namespace LigaIsadoraSilva.Controllers
 
             var staff = await _context.Staffs
                 .Include(s => s.Club)
-                .Include(s => s.User)
+                //.Include(s => s.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (staff == null)
             {
@@ -52,24 +54,30 @@ namespace LigaIsadoraSilva.Controllers
         [Authorize(Roles = "Team")]
         public IActionResult Create()
         {
-            ViewData["ClubId"] = new SelectList(_context.Clubs, "Id", "Coach");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["ClubId"] = new SelectList(_context.Clubs, "Id", "Name");
+            ViewData["StaffDutyId"] = new SelectList(_context.StaffDuties, "Id", "Name"); // Carregar Staff Duties
             return View();
         }
 
         // POST: Staffs/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ClubId,FullName,ContactNumber,Email,StaffDutyId,UserId")] Staff staff)
+        public async Task<IActionResult> Create(Staff staff)
         {
             if (ModelState.IsValid)
             {
+                if (staff.ImageFile != null)
+                {
+                    string imageUrl = await _imageHelper.UploadImageAsync(staff.ImageFile, "Staff");
+                    staff.Photo = imageUrl;
+                }
                 _context.Add(staff);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClubId"] = new SelectList(_context.Clubs, "Id", "Coach", staff.ClubId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", staff.UserId);
+
+            ViewData["ClubId"] = new SelectList(_context.Clubs, "Id", "Name", staff.ClubId);
+            ViewData["StaffDutyId"] = new SelectList(_context.StaffDuties, "Id", "Name", staff.StaffDutyId); // Manter seleção ao retornar erro
             return View(staff);
         }
 
@@ -87,15 +95,17 @@ namespace LigaIsadoraSilva.Controllers
             {
                 return new PageNotFoundViewResult("PageNotFound");
             }
-            ViewData["ClubId"] = new SelectList(_context.Clubs, "Id", "Coach", staff.ClubId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", staff.UserId);
+
+            ViewData["ClubId"] = new SelectList(_context.Clubs, "Id", "Name", staff.ClubId);
+            ViewData["StaffDutyId"] = new SelectList(_context.StaffDuties, "Id", "Name", staff.StaffDutyId); // Adiciona os StaffDuties
             return View(staff);
         }
+
 
         // POST: Staffs/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ClubId,FullName,ContactNumber,Email,StaffDutyId,UserId")] Staff staff)
+        public async Task<IActionResult> Edit(int id, Staff staff)
         {
             if (id != staff.Id)
             {
@@ -122,10 +132,12 @@ namespace LigaIsadoraSilva.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClubId"] = new SelectList(_context.Clubs, "Id", "Coach", staff.ClubId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", staff.UserId);
+
+            ViewData["ClubId"] = new SelectList(_context.Clubs, "Id", "Name", staff.ClubId);
+            ViewData["StaffDutyId"] = new SelectList(_context.StaffDuties, "Id", "Name", staff.StaffDutyId); // Manter seleção ao retornar erro
             return View(staff);
         }
+
 
         // GET: Staffs/Delete/5
         [Authorize(Roles = "Team")]
@@ -138,7 +150,7 @@ namespace LigaIsadoraSilva.Controllers
 
             var staff = await _context.Staffs
                 .Include(s => s.Club)
-                .Include(s => s.User)
+                //.Include(s => s.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (staff == null)
             {

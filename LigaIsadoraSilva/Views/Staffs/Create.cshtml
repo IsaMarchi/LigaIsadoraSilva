@@ -3,6 +3,48 @@
 @{
     ViewData["Title"] = "Create";
 }
+<style>
+    body {
+        background-color: black;
+        color: white;
+    }
+
+    h1, h3, h4 {
+        color: white;
+    }
+
+    .btn-danger {
+        background-color: #ff6666;
+        border-color: #ff6666;
+        color: white;
+        font-weight: bold;
+    }
+
+    .btn-back {
+        background-color: #00cccc;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        margin-left: 10px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-back:hover {
+            background-color: #00b3b3;
+            color: white;
+        }
+
+    .form-group-inline {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    dl {
+        margin: 0;
+    }
+</style>
 
 <h1>Create</h1>
 
@@ -10,7 +52,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="ClubId" class="control-label"></label>
@@ -32,13 +74,14 @@
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="StaffDutyId" class="control-label"></label>
-                <input asp-for="StaffDutyId" class="form-control" />
-                <span asp-validation-for="StaffDutyId" class="text-danger"></span>
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" type="file" class="form-control" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+                <label asp-for="StaffDutyId" class="control-label"></label>
+                <select asp-for="StaffDutyId" class="form-control" asp-items="ViewBag.StaffDutyId"></select>
+                <span asp-validation-for="StaffDutyId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

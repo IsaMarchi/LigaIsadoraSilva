@@ -6,6 +6,7 @@ namespace LigaIsadoraSilva.Data.Entities
 {
     public class Staff
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]
@@ -23,11 +24,28 @@ namespace LigaIsadoraSilva.Data.Entities
         public string Email { get; set; }
 
         [ForeignKey("StaffDuty")]
-        public string? StaffDutyId { get; set; }
-        public StaffDuty? StaffDutiy { get; set; }
+        public int? StaffDutyId { get; set; }
+        public StaffDuty? StaffDuty { get; set; }
 
-        [ForeignKey("User")]
-        public string? UserId { get; set; }
-        public User? User { get; set; }
+        [Display(Name = "Profile Picture")]
+        public string? Photo { get; set; }
+
+        [NotMapped] // Esta propriedade não será mapeada no banco de dados
+        [Display(Name = "Upload Image")]
+        public IFormFile? ImageFile { get; set; }
+
+        public string? ImageFullPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Photo))
+                {
+                    return "~/images/noImage.png";
+                }
+
+                return $"https://localhost:44301/{Photo.Substring(1)}";
+            }
+        }
+
     }
 }

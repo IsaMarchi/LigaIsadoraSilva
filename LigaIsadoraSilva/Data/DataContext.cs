@@ -12,7 +12,7 @@ namespace LigaIsadoraSilva.Data
         public DbSet<FootballTeam> Clubs { get; set; }
         public DbSet<Staff> Staffs { get; set; }
         public DbSet<StaffDuty> StaffDuties { get; set; }
-        public DbSet<PayersPosition> PayersPositions { get; set; }
+        
 
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)

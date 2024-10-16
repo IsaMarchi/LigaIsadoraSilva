@@ -34,7 +34,7 @@ namespace LigaIsadoraSilva.Controllers
                 var anonymousPlayers = players.Select(p => new
                 {
                     p.Name,
-                    //Position = p.PlayersPosition.Name, // Supondo que haja uma relação de posição
+                    Position = p.Position, // Agora usamos a propriedade Position diretamente
                     Club = p.Club.Name
                 });
 
@@ -71,9 +71,7 @@ namespace LigaIsadoraSilva.Controllers
         public IActionResult Create()
         {
             var clubes = _context.Clubs;
-            var positions = _context.PayersPositions;
             ViewData["ClubId"] = new SelectList(clubes, "Id", "Name");
-            ViewData["PlayersPositionId"] = new SelectList(positions, "Id", "Name");
             return View();
         }
 
@@ -95,9 +93,7 @@ namespace LigaIsadoraSilva.Controllers
             }
 
             var clubes = _context.Clubs;
-            var positions = _context.PayersPositions;
             ViewData["ClubId"] = new SelectList(clubes, "Id", "Name", player.ClubId);
-            ViewData["PlayersPositionId"] = new SelectList(positions, "Id", "Name", player.PlayersPositionId);
             return View(player);
         }
 
@@ -117,9 +113,7 @@ namespace LigaIsadoraSilva.Controllers
             }
 
             var clubes = _context.Clubs;
-            var positions = _context.PayersPositions;
             ViewData["ClubId"] = new SelectList(clubes, "Id", "Name", player.ClubId);
-            ViewData["PlayersPositionId"] = new SelectList(positions, "Id", "Name", player.PlayersPositionId);
             return View(player);
         }
 
@@ -155,7 +149,7 @@ namespace LigaIsadoraSilva.Controllers
                     oldPlayer.Name = player.Name;
                     oldPlayer.Nationality = player.Nationality;
                     oldPlayer.ClubId = player.ClubId;
-                    oldPlayer.PlayersPositionId = player.PlayersPositionId;
+                    oldPlayer.Position = player.Position; // Atualizando a posição
 
                     _context.Update(oldPlayer);
                     await _context.SaveChangesAsync();
@@ -176,9 +170,7 @@ namespace LigaIsadoraSilva.Controllers
             }
 
             var clubes = _context.Clubs;
-            var positions = _context.PayersPositions;
             ViewData["ClubId"] = new SelectList(clubes, "Id", "Name", player.ClubId);
-            ViewData["PlayersPositionId"] = new SelectList(positions, "Id", "Name", player.PlayersPositionId);
             return View(player);
         }
 
